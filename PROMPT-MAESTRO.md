@@ -81,9 +81,26 @@ Tiendes a converger hacia resultados genéricos y «promedio»; aquí eso sería
 - Atmósfera y profundidad (capas, gradientes, textura ligera) en lugar de fondos planos.
 - Subtítulos completos en capa editable: máximo 2 renglones, abajo, dentro de 100–930 px de ancho, sin cambiar palabras. Títulos ocasionales arriba.
 - Formato: vertical 1080×1920, 30 fps, 131.467 s (termina unos 2 s después de la última palabra).
-- Paleta base, ajustable si la referencia lo pide: ciruela #241C27, ámbar #E3A04D, blanco cálido #F0E8DF, verde apagado #8CAA9C.
+- Paleta base (cada piel la modula, ver `<estetica>`): ciruela #241C27, ámbar #E3A04D, blanco cálido #F0E8DF, verde apagado #8CAA9C.
 - Equipo para previsualizar: Windows 11, i7-1165G7, 12 GB RAM. Evita 3D y físicas pesadas.
 </direccion>
+
+<estetica>
+Concepto: «El deseo cambia de piel». La estética cambia con cada etapa porque así cambia nuestra forma de percibir el deseo en cada iteración. Una sola cosa nunca cambia: la luz ámbar del deseo (mismo color #E3A04D, mismo pulso), que atraviesa todos los estilos. Así la variedad atrae y la constante conserva el punto: el deseo es el protagonista y sigue vivo al final.
+
+Cinco pieles, cada una con su textura, ritmo y cámara:
+1. Luz líquida (0–34.28 · combustible y paquete). Partículas y luz ámbar fluida sobre ciruela profundo, grano fino. En el paquete: macro, papel kraft, desenfoque de capas y cámara casi quieta; «Ese momento» es un silencio visual.
+2. Collage acelerado (34.28–44.24 · consumo y vueltas). Recortes con borde de papel rasgado (casa, moto, teléfono, comida), animación a pasos tipo stop-motion (12 fps), cortes por coincidencia de forma y cada vuelta más rápida. Es el único tramo frenético.
+3. Plano técnico (44.24–64.82 · reconocer el mecanismo). Todo se congela. El mundo pasa a línea fina sobre fondo oscuro, como una lámina de anatomía del deseo, con rótulos a mano: impulso, anticipación, satisfacción, negación. En la negación, la mano aprieta y la luz ámbar se escapa entre los dedos.
+4. Materia dura (64.82–75.24 · condiciones). Casi sin color, geometría rígida, texturas de concreto. El propio cuadro se estrecha con franjas que limitan el espacio. Movimiento pesado.
+5. Textil y lápiz (75.24–final · malla, sin garantías, corregir, continuar). Vuelve el color: hilos con textura de estambre o bordado, manos, escenas de casa, clase y trabajo en recortes cálidos. Al corregir, el dibujo se ve a lápiz: se borra y se redibuja, con líneas que vibran a 8–12 fps (boiling). Corregir se ve como parte natural del dibujo, no como castigo.
+Cierre: las cinco pieles conviven un instante en el mismo cuadro y la luz ámbar sigue pulsando.
+
+Transiciones entre pieles: siempre por transformación (la luz ámbar se convierte en la siguiente textura, un recorte se desarma en líneas, una línea se vuelve hilo), nunca por fundido a negro.
+Recursos viables en HTML/SVG/GSAP: grano y papel con filtros SVG (feTurbulence), bordes rasgados con trazos irregulares, animación a pasos con `steps()`, líneas que vibran con 2–3 variantes alternadas, franjas de encuadre con máscaras, tipografía cinética y morph de formas. Verifica en la documentación oficial de GSAP qué plugins están disponibles y bajo qué licencia antes de usarlos; no lo supongas. Sin fotos reales: los recortes son ilustrados con textura.
+Sonido (opcional, evaluar con audio): una base mínima que cambie con cada piel y nunca tape la voz.
+Riesgo que debes cuidar: la variedad no puede volverse ruido. Si en la prueba un cambio de piel distrae de la voz, simplifica esa piel antes que la idea.
+</estetica>
 
 <referencia_visual>
 Enlace: https://x.com/VoidStateKate/status/2104041451084517742 (desde el contenedor no se puede abrir X; esta es mi descripción)
@@ -107,7 +124,7 @@ Así quiero que describas cada toma del animatic: acción y transformación, no 
 
 <proceso>
 1. En máximo 150 palabras: tu lectura de la idea y la propuesta visual (un solo concepto, sin variantes). Luego el animatic completo en texto, por tomas con tiempos fuente, con el formato de `<ejemplos_de_toma>`.
-2. Construye solo una prueba de 15 s del momento «reconocer el mecanismo» (fuente aprox. 44.24–59.00: impulso, anticipación, satisfacción y negación). Renderízala a MP4 con el audio de ese tramo. Entrégala y detente para que la revise.
+2. Construye solo una prueba de 20 s que cruce dos pieles: el final del collage acelerado y la transición al plano técnico de «reconocer el mecanismo» (fuente aprox. 38.76–58.80: vueltas, freno, impulso, anticipación, satisfacción y negación). Así se prueba a la vez la estética cambiante y la transición por transformación. Renderízala a MP4 con el audio de ese tramo. Entrégala y detente para que la revise.
 3. Si la apruebo, construye la pieza completa reutilizando lo aprobado. Si no alcanza el nivel, propón cambiar de herramienta (After Effects, Rive u otra) y entrega un guion técnico toma por toma en lugar de seguir intentando a ciegas.
 4. Guarda el avance en archivos del repositorio (animatic, estado.md con lo aprobado y lo pendiente) para poder continuar en otro chat sin repetir contexto.
 </proceso>
