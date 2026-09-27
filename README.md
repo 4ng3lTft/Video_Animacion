@@ -3,7 +3,7 @@
 Animación vertical 2D (1080 × 1920, 30 fps) sobre la voz grabada de «narracion-corregida.srt».
 Duración provisional de la pieza completa: 131.467 s (3944 fotogramas); se ajusta al conocer la duración real del audio.
 
-**Estado: fase 1 (storyboard + piloto). Sincronización basada en transcripción; pendiente de comprobar con audio.**
+**Estado: fase 2 (pieza completa) lista para revisión.** Audio integrado (`pieza/narracion.mp3`, 130.94 s). Los tiempos del SRT coinciden con la grabación (voz desde 0.79 s, última palabra hasta 129.52 s, medido por detección de silencios; no escuchado).
 
 ## Contenido
 
@@ -11,6 +11,8 @@ Duración provisional de la pieza completa: 131.467 s (3944 fotogramas); se ajus
 |---|---|
 | `guion/narracion-frases.tsv` | Transcripción vigente agrupada por frases (tiempos fuente desde t=0 de la grabación). Fuente verbal única. |
 | `design/project/` | Copia del lienzo de Claude Design: storyboard de nueve cuadros + tarjeta del piloto (`canvas.json` + `*.dc.html`). |
+| `pieza/pieza.html` | Composición HyperFrames completa: 9 capítulos, 131.467 s (3944 fotogramas), subtítulos editables con tiempos fuente, `<audio>` desde t=0. |
+| `exportes/el-equilibrio-se-va-haciendo.mp4` | Render local de la pieza (H.264 + AAC), para revisión. |
 | `piloto/piloto.html` | Composición HyperFrames autocontenida del piloto (18 s). SVG/CSS + línea temporal GSAP en pausa, registrada en `window.__timelines["main"]`. Fuente Literata (OFL) incrustada. |
 | `piloto/vista-previa.html` | Reproductor para revisar el piloto (reproducir, barra, ±1 fotograma, zonas seguras, tiempo fuente). |
 
@@ -28,8 +30,15 @@ Duración provisional de la pieza completa: 131.467 s (3944 fotogramas); se ajus
 - Render en Chromium headless con el runtime de HyperFrames 0.8.79 y GSAP 3.14.2 locales: duración 18 s, navegación con `window.__player.seek`, fotogramas revisados en 0.6, 4, 8.5, 12.5, 16, 17.6 s.
 - No comprobado: audio, mezcla, Send to HyperFrames, exportación MP4.
 
+## Pieza completa: notas
+
+- Cortes internos provisionales, estimados con los silencios del audio: 89.950, 100.400, 105.910, 116.300.
+- 125.400–129.440 («El equilibrio se va haciendo / en la medida de lo posible.») aparece como título en la zona alta, no como subtítulo.
+- Validación: `@hyperframes/lint` 0 errores (avisos de tamaño/estructura); 35 subtítulos comprobados automáticamente (≤ 2 renglones, dentro de 100–930 px, sin solapes).
+- Para Send to HyperFrames, el `<audio>` necesita una URL pública absoluta del mp3 (la ruta relativa no viaja).
+
 ## Pendiente
 
-1. Audio original → verificar tiempos, cortes provisionales y duración total.
-2. Fase 2 (al decir «continúa»): pieza completa de 131.467 s reutilizando estos componentes.
-3. Enviar a HyperFrames y exportar MP4 (paso manual fuera de este entorno).
+1. Revisión humana de la pieza con audio (sincronía fina, mezcla, lectura en teléfono).
+2. Fase 3: recorte de 20 s. Fase 4: preguntas de prueba.
+3. Enviar a HyperFrames (paso manual fuera de este entorno).
