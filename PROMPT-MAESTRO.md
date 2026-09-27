@@ -1,54 +1,14 @@
 # Prompt maestro · «El equilibrio se va haciendo» (versión 2)
 
-Copia todo lo que está debajo de la línea en un chat nuevo. Antes, llena la sección REFERENCIA VISUAL.
+Copia todo lo que está debajo de la línea en un chat nuevo. Antes, llena `<referencia_visual>`.
+Estructura basada en la guía oficial de prompting de Anthropic
+(https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices):
+datos largos arriba, secciones en etiquetas XML, el porqué de cada regla, ejemplos y criterios de revisión concretos.
 
 ---
 
-Actúa como director de animación y motion designer senior. Vamos a rehacer desde cero la animación de «El equilibrio se va haciendo». Ya existe un intento anterior que NO funcionó; aquí tienes lo aprendido para no repetirlo.
-
-## Material disponible (repositorio 4ng3lTft/Video_Animacion, rama `claude/epic-heisenberg-lknc9k`)
-- `pieza/narracion.mp3`: mi voz grabada, 130.94 s, mono. Es la única voz; no la generes, no la cortes, no la aceleres.
-- `guion/narracion-frases.tsv`: transcripción vigente por frases, tiempos en segundos desde t=0 del audio. Coincide con el audio (voz desde 0.79 s, última palabra hasta 129.52 s). Transcripción íntegra al final de este prompt.
-- `pieza/pieza.html`: versión anterior (HyperFrames + GSAP + SVG). Úsala solo como referencia técnica (contrato HyperFrames, subtítulos, fuente incrustada). No reutilices su estilo visual.
-- Herramientas que ya funcionaron en el entorno: GSAP 3.14.2 y `@hyperframes/core` vía npm (jsdelivr está bloqueado en el contenedor), `@hyperframes/lint`, Playwright con Chromium en /opt/pw-browsers, ffmpeg con libx264 vía `pip install imageio-ffmpeg`. Render: `window.__player.seek(t)` por fotograma + captura + ffmpeg con el mp3.
-
-## La idea (lo que alguien debe entender al terminar)
-No hay vergüenza en desear. Lo importante son las iteraciones: reconocer la naturaleza misma del deseo (impulso, anticipación, satisfacción y también la negación, que al apretarlo lo intensifica) y reconocer nuestro lugar en la malla. El DESEO es el protagonista; la malla (comunidad) es el actor que le da sentido al deseo una vez analizado y diseccionado. El equilibrio no se alcanza: se va haciendo, en la medida de lo posible, con condiciones materiales reales y sin garantías.
-- Es mi reflexión en español cercano de México, no una ley psicológica.
-- El deseo no es villano ni el disfrute un engaño. Los vínculos son entre personas con autonomía.
-- Ejemplos concretos de deseo, fáciles de reconocer: una casa, una moto, un teléfono, placeres (una comida compartida es un deseo que no es malo y el primero que incluye a otras personas).
-
-## Por qué falló el intento anterior (no repetir)
-1. Ilustraba frase por frase: la imagen repetía la voz en lugar de aportar.
-2. Nueve escenas separadas con fundidos a negro: sin continuidad, sin arco.
-3. Símbolos abstractos (hilos, nudos, cajas, siluetas genéricas) que obligaban a descifrar la metáfora.
-4. Movimiento pobre: casi todo era aparecer / dibujar línea / desvanecer. Sin cámara, sin transformaciones, sin anticipación, sin rebote, sin movimiento secundario.
-5. Se revisó con capturas fijas, así que el ritmo y la fluidez no se evaluaron.
-
-## Dirección nueva
-- Una sola toma continua o casi continua: la cámara viaja, las formas se transforman unas en otras (morph), no hay cortes a negro.
-- Menos símbolos, más acción. La voz explica; la imagen muestra una transformación que suma.
-- Personaje más expresivo aunque sea simple (postura, gesto, peso). El deseo debe verse como algo vivo y cálido, con pulso, de principio a fin.
-- Principios de animación: anticipación, seguimiento/solapamiento, easing con intención, arcos, secundarios. Momentos de quietud deliberados.
-- Tipografía cinética solo si ayuda; subtítulos completos en capa editable (máx. 2 renglones, margen seguro 100–930 px, abajo), títulos ocasionales arriba.
-- Vertical 1080×1920, 30 fps, duración 131.467 s (termina ~2 s después de la última palabra).
-- Paleta base (ajustable si la referencia lo pide): ciruela #241C27, ámbar #E3A04D, blanco cálido #F0E8DF, verde apagado #8CAA9C.
-- Equipo del usuario para previsualizar: Windows 11, i7-1165G7, 12 GB RAM. Evitar 3D y físicas pesadas.
-
-## REFERENCIA VISUAL (llena esto antes de pegar)
-Enlace: https://x.com/VoidStateKate/status/2104041451084517742 (Claude no puede abrir X; describe lo que ves)
-- Estilo (ilustración con personajes / formas abstractas que se transforman / tipografía / mezcla): …
-- Ritmo (rápido con cortes / fluido y continuo): …
-- Lo que más me gusta (colores, texturas, cámara, transiciones, sonido): …
-- Qué NO quiero de esa referencia: …
-
-## Proceso (cuidando tokens)
-1. En máximo 150 palabras: tu lectura de la idea y la propuesta visual. Luego un animatic de texto por tomas con tiempos fuente.
-2. Construye SOLO una prueba de 15 s: el momento de «reconocer el mecanismo» (fuente ~44.24–59.00, incluye impulso, anticipación, satisfacción y negación). Renderízala a MP4 con el audio de ese tramo y revisa el movimiento con tiras de fotogramas consecutivos (no solo capturas sueltas). Entrégala y DETENTE.
-3. Si apruebo, construye la pieza completa reutilizando lo aprobado. Si no, propón cambiar de herramienta (After Effects, Rive u otra) y entrega un guion técnico toma por toma en lugar de seguir intentando.
-4. Reporta breve: qué construiste, qué comprobaste, qué falta. Consumo de tokens: «no disponible» si la interfaz no lo expone. No inventes funciones ni resultados; si no sabes algo, dilo y remite a la documentación oficial.
-
-## Transcripción vigente (inicio–fin en segundos | texto literal; no cambiar palabras)
+<transcripcion>
+Formato: inicio–fin en segundos desde t=0 del audio | texto literal. No cambies palabras.
 0.820-2.600 | Como humanos tendemos a desear
 3.800-6.840 | y ese deseo es como si fuera un combustible.
 8.240-10.960 | Nos mueve, nos ayuda a imaginar,
@@ -83,3 +43,81 @@ Enlace: https://x.com/VoidStateKate/status/2104041451084517742 (Claude no puede 
 120.240-124.020 | y que esa corrección cambie algo en cómo nos cuidamos.
 125.400-126.930 | El equilibrio se va haciendo
 127.660-129.440 | en la medida de lo posible.
+</transcripcion>
+
+<contexto>
+Soy estudiante de 4.º semestre de Ingeniería en Sistemas. Grabé una reflexión personal (español cercano de México) y quiero convertirla en una animación vertical para redes. Ya hubo un intento que no funcionó; esta es la segunda versión y quiero calidad de motion design, como las animaciones dinámicas que se ven en X.
+
+Todo el material está en el repositorio 4ng3lTft/Video_Animacion, rama `claude/epic-heisenberg-lknc9k`. Lee el estado desde esos archivos al empezar; no necesitas la conversación anterior.
+- `pieza/narracion.mp3`: mi voz, 130.94 s, mono. Es la única voz: no se genera, no se corta, no se acelera. La transcripción de arriba coincide con este audio (voz desde 0.79 s, última palabra hasta 129.52 s).
+- `pieza/pieza.html`: el intento anterior (HyperFrames + GSAP + SVG). Sirve como referencia técnica (contrato HyperFrames, subtítulos editables, fuente incrustada), no de estilo.
+- Herramientas que ya funcionaron en este contenedor: GSAP 3.14.2 y `@hyperframes/core` vía npm (jsdelivr está bloqueado), `@hyperframes/lint`, Playwright con Chromium en /opt/pw-browsers, ffmpeg con libx264 vía `pip install imageio-ffmpeg`. Render: `window.__player.seek(t)` por fotograma, captura y ffmpeg con el mp3.
+- Guía de HyperFrames: https://github.com/heygen-com/hyperframes/blob/main/docs/guides/claude-design-send-to-hyperframes.md
+</contexto>
+
+<idea>
+Lo que alguien debe entender al terminar: no hay vergüenza en desear. Lo importante son las iteraciones: reconocer la naturaleza misma del deseo (impulso, anticipación, satisfacción, y también la negación, que al apretar el deseo lo intensifica) y reconocer nuestro lugar en la malla.
+- El DESEO es el protagonista de principio a fin. La malla (comunidad) es el actor que le da sentido al deseo una vez analizado y diseccionado.
+- El equilibrio no se alcanza: se va haciendo, en la medida de lo posible, con condiciones materiales reales y sin garantías.
+- Ejemplos de deseo fáciles de reconocer: una casa, una moto, un teléfono, placeres. La comida compartida es un deseo que no es malo y el primero que incluye a otras personas: sirve de puente hacia la malla.
+- Es mi reflexión, no una ley psicológica. El deseo no es villano ni el disfrute un engaño. Los vínculos son entre personas con autonomía, no objetos.
+</idea>
+
+<lecciones_del_intento_anterior>
+Estas fallas hicieron que la idea no se transmitiera; evítalas porque son la razón de rehacer todo:
+1. Se ilustró frase por frase. La imagen repetía la voz en vez de sumarle algo, y el video parecía una presentación.
+2. Nueve escenas sueltas con fundidos a negro. Sin continuidad no se percibía un arco.
+3. Símbolos abstractos (hilos, nudos, cajas, siluetas genéricas) que el público tenía que descifrar mientras escuchaba un texto ya reflexivo.
+4. Movimiento pobre: aparecer, dibujar una línea, desvanecer. Sin cámara, sin transformaciones, sin anticipación ni rebote.
+5. Se revisó con capturas fijas, así que nunca se evaluó el ritmo ni la fluidez.
+</lecciones_del_intento_anterior>
+
+<direccion>
+Tiendes a converger hacia resultados genéricos y «promedio»; aquí eso sería repetir el intento anterior. Busca una propuesta con carácter propio, pensada para esta idea.
+- Continuidad: una toma continua o casi continua. La cámara viaja y las formas se transforman unas en otras (morph), para que el público sienta un solo recorrido del deseo.
+- Menos símbolos, más acción: la voz explica y la imagen muestra una transformación que suma.
+- Personaje expresivo aunque sea simple (postura, gesto, peso), porque la idea es humana y necesita empatía.
+- Principios de animación: anticipación, seguimiento y solapamiento, arcos, easing con intención, movimiento secundario. Pocos momentos de gran impacto bien orquestados valen más que efectos dispersos. También debe haber quietud deliberada.
+- Atmósfera y profundidad (capas, gradientes, textura ligera) en lugar de fondos planos.
+- Subtítulos completos en capa editable: máximo 2 renglones, abajo, dentro de 100–930 px de ancho, sin cambiar palabras. Títulos ocasionales arriba.
+- Formato: vertical 1080×1920, 30 fps, 131.467 s (termina unos 2 s después de la última palabra).
+- Paleta base, ajustable si la referencia lo pide: ciruela #241C27, ámbar #E3A04D, blanco cálido #F0E8DF, verde apagado #8CAA9C.
+- Equipo para previsualizar: Windows 11, i7-1165G7, 12 GB RAM. Evita 3D y físicas pesadas.
+</direccion>
+
+<referencia_visual>
+Enlace: https://x.com/VoidStateKate/status/2104041451084517742 (desde el contenedor no se puede abrir X; esta es mi descripción)
+- Estilo (ilustración con personajes / formas abstractas que se transforman / tipografía / mezcla): …
+- Ritmo (rápido con cortes / fluido y continuo): …
+- Lo que más me gusta (colores, texturas, cámara, transiciones, sonido): …
+- Qué no quiero de esa referencia: …
+</referencia_visual>
+
+<ejemplos_de_toma>
+Así quiero que describas cada toma del animatic: acción y transformación, no el dibujo de la frase.
+
+<example tipo="mal">
+44.24–46.27 · Aparece una persona y su hilo. Subtítulo: «Podríamos argumentar que este equilibrio».
+</example>
+
+<example tipo="bien">
+44.24–50.30 · La cámara sigue la estela del teléfono que se apaga y aterriza en las manos de la persona. Ella se detiene por primera vez; la luz que la movía se abre en cuatro corrientes que la rodean como si pudiera mirarlas desde fuera. Transformación: el objeto se disuelve en su propio mecanismo. Quietud de 0.8 s antes de «reconocemos los impulsos».
+</example>
+</ejemplos_de_toma>
+
+<proceso>
+1. En máximo 150 palabras: tu lectura de la idea y la propuesta visual (un solo concepto, sin variantes). Luego el animatic completo en texto, por tomas con tiempos fuente, con el formato de `<ejemplos_de_toma>`.
+2. Construye solo una prueba de 15 s del momento «reconocer el mecanismo» (fuente aprox. 44.24–59.00: impulso, anticipación, satisfacción y negación). Renderízala a MP4 con el audio de ese tramo. Entrégala y detente para que la revise.
+3. Si la apruebo, construye la pieza completa reutilizando lo aprobado. Si no alcanza el nivel, propón cambiar de herramienta (After Effects, Rive u otra) y entrega un guion técnico toma por toma en lugar de seguir intentando a ciegas.
+4. Guarda el avance en archivos del repositorio (animatic, estado.md con lo aprobado y lo pendiente) para poder continuar en otro chat sin repetir contexto.
+</proceso>
+
+<criterios_de_revision>
+Antes de entregar cada render, compruébalo contra esto (con herramientas reales, sin suponer):
+- Movimiento: revisa tiras de fotogramas consecutivos (por ejemplo 12 fotogramas seguidos en los momentos clave), no solo capturas sueltas. Busca saltos, elementos que aparecen de golpe, cosas que se enciman o se salen de cuadro.
+- Continuidad: ningún corte a negro entre ideas, salvo que lo justifiques.
+- Sincronía: las acciones clave caen en las palabras que las motivan (usa los tiempos de la transcripción y la detección de silencios del audio).
+- Subtítulos: todos en ≤ 2 renglones, dentro del margen y sin solaparse (comprobación automática).
+- Técnica: `@hyperframes/lint` sin errores; línea de tiempo pausada, determinista, duración exacta.
+Reporta brevemente qué construiste, qué comprobaste y qué falta. Si algo no lo puedes comprobar (por ejemplo, oír la mezcla), dilo. Si no estás seguro de una librería o API, dilo y remite a la documentación oficial en lugar de inventar. Consumo de tokens: «no disponible» si la interfaz no lo expone.
+</criterios_de_revision>
