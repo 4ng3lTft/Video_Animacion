@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="es" style="overflow:hidden; margin:0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>Prueba · collage → plano técnico</title>
+<!--
+  PRUEBA DE 20 s · «El deseo cambia de piel» · 1080×1920 · 30 fps · HyperFrames
+  Tramo fuente 38.76–58.80 de narracion.mp3 (fotograma 0 = 38.76 s de la voz).
+  Pieles: 2 · collage acelerado (12 fps, recortes rasgados)  →  3 · plano técnico (línea fina, 30 fps).
+  Transición por transformación: la luz quema el papel, el collage se rasga y debajo aparece el plano.
+  ESTE ARCHIVO ES UNA PLANTILLA: se ensambla con  python3 herramientas/construir.py prueba/prueba.fuente.html prueba/prueba.html
+  Todos los tiempos del script están en segundos FUENTE; en(s) los traslada al tiempo de la prueba.
+-->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/MotionPathPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+<style>
+/* Literata (OFL) para subtítulos · Architects Daughter (OFL) para rótulos a mano del plano */
+@font-face { font-family: "Literata"; font-weight: 400 600; font-display: block;
+  src: url(data:font/woff2;base64,{{FUENTE_LITERATA}}) format("woff2"); }
+@font-face { font-family: "Architects Daughter"; font-weight: 400; font-display: block;
+  src: url(data:font/woff2;base64,{{FUENTE_MANO}}) format("woff2"); }
+:root {
+  --ciruela: #241C27; --ambar: #E3A04D; --blanco: #F0E8DF; --verde: #8CAA9C;
+  --bg: #241C27; --linea: #EDE3D6;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ciruela); }
+#main { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--ciruela);
+  font-family: "Literata", Georgia, serif; color: var(--blanco); }
+.scene, .scene-content { position: absolute; inset: 0; }
+svg#escena { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.mano { font-family: "Architects Daughter", "Literata", cursive; }
+/* grano de película: PNG incrustado, se desplaza por fotograma desde la línea de tiempo */
+#grano { position: absolute; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
+  background-image: url(data:image/png;base64,{{GRANO}}); background-size: 256px 256px; }
+#vineta { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 78% 62% at 50% 44%, rgba(0,0,0,0) 55%, rgba(10,6,12,0.55) 100%); }
+/* banda baja sutil para que el subtítulo se lea sobre cualquier piel */
+#banda { position: absolute; left: 0; right: 0; bottom: 330px; height: 360px; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(16,11,18,0) 0%, rgba(16,11,18,0.42) 45%, rgba(16,11,18,0) 100%); }
+.titulo { position: absolute; left: 110px; right: 110px; top: 150px; text-align: center;
+  font-family: "Architects Daughter", cursive; font-size: 46px; line-height: 1.2; color: var(--linea);
+  visibility: hidden; opacity: 0; }
+.titulo small { display: block; font-size: 28px; color: var(--verde); letter-spacing: 0.08em; margin-top: 6px; }
+#subtitulos { position: absolute; left: 100px; right: 150px; bottom: 440px; height: 140px; }
+.cue { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-weight: 500; font-size: 50px;
+  line-height: 1.28; color: var(--blanco); visibility: hidden; opacity: 0;
+  text-shadow: 0 2px 14px rgba(12,8,14,0.85), 0 0 2px rgba(12,8,14,0.9); }
+</style>
+</head>
+<body>
+<div id="main" data-composition-id="main" data-width="1080" data-height="1920" data-start="0" data-duration="20.04">
+
+  <!-- Voz original, tramo 38.76–58.80. narracion.mp3 es un enlace a ../pieza/narracion.mp3.
+       Para Send to HyperFrames: URL pública absoluta del mp3. -->
+  <audio id="voz" data-start="0" data-duration="20.04" data-media-start="38.76" data-track-index="10" src="narracion.mp3"></audio>
+
+  <!-- Una sola toma continua: no hay cortes entre escenas, las pieles se transforman dentro del mismo cuadro. -->
+  <div class="scene clip" id="toma" data-start="0" data-duration="20.04" data-track-index="0">
+    <div class="scene-content">
+      <svg id="escena" viewBox="0 0 1080 1920" aria-hidden="true">
+        <defs>
+          <radialGradient id="halo">
+            <stop offset="0" stop-color="#E3A04D" stop-opacity="0.95"></stop>
+            <stop offset="0.28" stop-color="#E3A04D" stop-opacity="0.42"></stop>
+            <stop offset="0.62" stop-color="#E3A04D" stop-opacity="0.1"></stop>
+            <stop offset="1" stop-color="#E3A04D" stop-opacity="0"></stop>
+          </radialGradient>
+          <radialGradient id="fondo-plano" cx="50%" cy="42%" r="75%">
+            <stop offset="0" stop-color="#2A2230"></stop>
+            <stop offset="1" stop-color="#15101A"></stop>
+          </radialGradient>
+          <pattern id="reticula" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#8CAA9C" stroke-opacity="0.075" stroke-width="1"></path>
+          </pattern>
+          <pattern id="reticula-mayor" width="200" height="200" patternUnits="userSpaceOnUse">
+            <path d="M 200 0 L 0 0 0 200" fill="none" stroke="#8CAA9C" stroke-opacity="0.13" stroke-width="1.2"></path>
+          </pattern>
+          <pattern id="fibra" width="384" height="384" patternUnits="userSpaceOnUse">
+            <image href="data:image/png;base64,{{FIBRA}}" width="384" height="384"></image>
+          </pattern>
+          <clipPath id="corte-arriba"><path d="{{CORTE_ARRIBA}}"></path></clipPath>
+          <clipPath id="corte-abajo"><path d="{{CORTE_ABAJO}}"></path></clipPath>
+          <clipPath id="cl-impulso"><rect class="cl" x="846" y="552" width="0" height="60"></rect></clipPath>
+          <clipPath id="cl-anticipacion"><rect class="cl" x="466" y="334" width="0" height="60"></rect></clipPath>
+          <clipPath id="cl-negacion"><rect class="cl" x="640" y="930" width="0" height="60"></rect></clipPath>
+          <clipPath id="cl-satisfaccion"><rect class="cl" x="676" y="1222" width="0" height="60"></rect></clipPath>
+        </defs>
+
+        <!-- ================= PIEL 3 · PLANO TÉCNICO (debajo; aparece al rasgarse el collage) ================= -->
+        <g id="plano">
+          <rect x="0" y="0" width="1080" height="1920" fill="url(#fondo-plano)"></rect>
+          <g class="cam" transform="translate(540 960)"><g class="cam-sh"><g class="cam-rs"><g class="cam-xy">
+            <rect x="-700" y="-900" width="2480" height="3720" fill="url(#reticula)"></rect>
+            <rect x="-700" y="-900" width="2480" height="3720" fill="url(#reticula-mayor)"></rect>
+            <!-- marco de la lámina con marcas de registro -->
+            <g id="lamina" fill="none" stroke="#8CAA9C" stroke-opacity="0.5" stroke-width="1.6">
+              <rect x="56" y="118" width="968" height="1690"></rect>
+              <path d="M 56 90 v 56 M 28 118 h 56 M 1024 90 v 56 M 996 118 h 56 M 56 1780 v 56 M 28 1808 h 56 M 1024 1780 v 56 M 996 1808 h 56"></path>
+            </g>
+            <!-- especímenes: los mismos objetos del collage, ahora en línea -->
+            <g class="w-casa">{{OBJ_LINEA_CASA}}</g>
+            <g class="w-moto">{{OBJ_LINEA_MOTO}}</g>
+            <g class="w-tel">{{OBJ_LINEA_TEL}}</g>
+            <g id="figs" class="mano" fill="#8CAA9C" font-size="25">
+              <g class="fig"><path d="M 250 572 v 16" stroke="#8CAA9C" stroke-width="1.6"></path><text x="250" y="614" text-anchor="middle">fig. 1 · casa</text></g>
+              <g class="fig"><path d="M 840 508 v 16" stroke="#8CAA9C" stroke-width="1.6"></path><text x="840" y="550" text-anchor="middle">fig. 2 · moto</text></g>
+              <g class="fig"><path d="M 900 926 v 14" stroke="#8CAA9C" stroke-width="1.6"></path><text x="905" y="966" text-anchor="middle">fig. 3 · teléfono</text></g>
+            </g>
+            <!-- mesa compartida (satisfacción): se dibuja cuando la voz le da tiempo -->
+            <g id="mesa" fill="none">{{MESA}}</g>
+            <circle id="olla-brillo" cx="760" cy="1092" r="150" fill="url(#halo)" opacity="0"></circle>
+            {{TIEMPO}}
+            <g id="vapor">{{VAPOR}}</g>
+            <!-- resplandor que se fuga del puño (debajo de la mano) -->
+            <circle id="fuga-halo" cx="0" cy="0" r="170" fill="url(#halo)" opacity="0"></circle>
+            <!-- anticipación: trayectorias punteadas hacia lo que imaginamos -->
+            <g id="arcos" fill="#8CAA9C">{{ARCOS}}</g>
+            <g id="flecha-impulso" fill="#E8C9A0">{{IMPULSO}}</g>
+            {{RIG_LINEA}}
+            <!-- otra persona: su mano llega a la mesa -->
+            <g id="otra-mano">{{OTRA_MANO}}</g>
+            <!-- rótulos a mano: se escriben de izquierda a derecha -->
+            <g class="mano" font-size="40" fill="#EDE3D6">
+              <g id="rot-impulso"><path class="guia" d="M 812 672 L 856 614" stroke="#8CAA9C" stroke-width="2" fill="none"></path>
+                <text x="850" y="598" clip-path="url(#cl-impulso)">impulso</text>
+                <path class="subraya" d="M 850 610 q 60 6 124 -2" stroke="#E3A04D" stroke-width="2.6" fill="none" stroke-linecap="round"></path></g>
+              <g id="rot-anticipacion"><text x="470" y="380" clip-path="url(#cl-anticipacion)">anticipación</text>
+                <path class="subraya" d="M 470 392 q 110 8 226 -2" stroke="#8CAA9C" stroke-width="2.4" fill="none" stroke-linecap="round"></path></g>
+              <g id="rot-negacion"><path class="guia" d="M 676 838 L 700 928" stroke="#8CAA9C" stroke-width="2" fill="none"></path>
+                <text x="644" y="976" clip-path="url(#cl-negacion)">negación</text>
+                <path class="subraya" d="M 644 988 q 80 7 160 -2" stroke="#E3A04D" stroke-width="2.6" fill="none" stroke-linecap="round"></path></g>
+              <g id="rot-satisfaccion"><path class="guia" d="M 766 1190 L 772 1224" stroke="#8CAA9C" stroke-width="2" fill="none"></path>
+                <text x="680" y="1268" clip-path="url(#cl-satisfaccion)">satisfacción</text>
+                <path class="subraya" d="M 680 1280 q 100 7 204 -2" stroke="#8CAA9C" stroke-width="2.4" fill="none" stroke-linecap="round"></path></g>
+            </g>
+          </g></g></g></g>
+        </g>
+
+        <!-- ================= PIEL 2 · COLLAGE ACELERADO (encima; se rasga en 44.04–45.0) ================= -->
+        <g id="collage-envoltura">
+          <g id="collage-vivo">
+            <g class="cam" transform="translate(540 960)"><g class="cam-sh"><g class="cam-rs"><g class="cam-xy">
+              <rect x="-700" y="-900" width="2480" height="3720" fill="#2A1F2D"></rect>
+              {{MUESTRAS}}
+              <g class="w-casa">{{OBJ_PAPEL_CASA}}</g>
+              <g class="w-moto">{{OBJ_PAPEL_MOTO}}</g>
+              <g class="w-tel">{{OBJ_PAPEL_TEL}}</g>
+              {{RIG_PAPEL}}
+              <rect x="-700" y="-900" width="2480" height="3720" fill="url(#fibra)"></rect>
+            </g></g></g></g>
+          </g>
+        </g>
+        <!-- la luz quema una línea en el papel antes de rasgarlo -->
+        <g id="grieta" fill="none" stroke="#F3EBDD" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+          <path id="grieta-izq" d="{{GRIETA_IZQ}}"></path>
+          <path id="grieta-der" d="{{GRIETA_DER}}"></path>
+        </g>
+        <g id="mitad-arriba">
+          <g clip-path="url(#corte-arriba)"><use href="#collage-vivo"></use></g>
+          <path d="{{FIBRA_ARRIBA}}" fill="#EDE3D2"></path>
+        </g>
+        <g id="mitad-abajo">
+          <g clip-path="url(#corte-abajo)"><use href="#collage-vivo"></use></g>
+          <path d="{{FIBRA_ABAJO}}" fill="#EDE3D2"></path>
+        </g>
+
+        <!-- ================= LA LUZ ÁMBAR · constante en todas las pieles ================= -->
+        <g id="luz-capa">
+          <g class="cam" transform="translate(540 960)"><g class="cam-sh"><g class="cam-rs"><g class="cam-xy">
+            <g id="fantasmas">
+              <g class="fantasma" id="fa-casa"><circle r="60" fill="url(#halo)"></circle><circle r="9" fill="#E3A04D"></circle></g>
+              <g class="fantasma" id="fa-moto"><circle r="60" fill="url(#halo)"></circle><circle r="9" fill="#E3A04D"></circle></g>
+              <g class="fantasma" id="fa-tel"><circle r="60" fill="url(#halo)"></circle><circle r="9" fill="#E3A04D"></circle></g>
+            </g>
+            <g id="estela" fill="#E3A04D">
+              <circle class="e1" r="10"></circle><circle class="e2" r="8"></circle>
+              <circle class="e3" r="6"></circle><circle class="e4" r="4.5"></circle>
+            </g>
+            <g id="fugas" stroke="#E3A04D" stroke-linecap="round" fill="none">
+              <g class="rayo" transform="rotate(-150)"><line x1="34" y1="0" x2="130" y2="0" stroke-width="7"></line></g>
+              <g class="rayo" transform="rotate(-112)"><line x1="34" y1="0" x2="170" y2="0" stroke-width="5"></line></g>
+              <g class="rayo" transform="rotate(-78)"><line x1="34" y1="0" x2="150" y2="0" stroke-width="8"></line></g>
+              <g class="rayo" transform="rotate(-40)"><line x1="34" y1="0" x2="190" y2="0" stroke-width="5"></line></g>
+              <g class="rayo" transform="rotate(-4)"><line x1="40" y1="0" x2="140" y2="0" stroke-width="7"></line></g>
+              <g class="rayo" transform="rotate(34)"><line x1="36" y1="0" x2="120" y2="0" stroke-width="5"></line></g>
+            </g>
+            <g id="luz">
+              <g id="luz-vis">
+                <circle id="luz-destello" r="260" fill="url(#halo)" opacity="0"></circle>
+                <g id="luz-pulso"><circle r="118" fill="url(#halo)"></circle></g>
+                <g id="luz-cuerpo"><circle r="17" fill="#E3A04D"></circle><circle cx="-4" cy="-5" r="6.5" fill="#FBE6C6"></circle></g>
+              </g>
+            </g>
+          </g></g></g></g>
+        </g>
+      </svg>
+      <div id="banda"></div>
+      <div id="grano"></div>
+      <div id="vineta"></div>
+      <p class="titulo" id="t-lamina">lámina 1 · anatomía de un deseo<small>impulso · anticipación · negación · satisfacción</small></p>
+    </div>
+  </div>
+
+  <!-- ============ SUBTÍTULOS · capa editable · tiempos FUENTE (segundos de narracion.mp3) ============ -->
+  <div id="subtitulos" data-timeline-role="captions" data-caption-root="true">
+    <p class="cue" data-src-start="38.760" data-src-end="41.820">a veces el deseo ya está<br>buscando otro huésped.</p>
+    <p class="cue" data-src-start="44.240" data-src-end="46.270">Podríamos argumentar<br>que este equilibrio</p>
+    <p class="cue" data-src-start="47.020" data-src-end="50.300">se va a obtener una vez que<br>reconocemos los impulsos</p>
+    <p class="cue" data-src-start="51.020" data-src-end="54.820">y escogemos qué deseos<br>o ilusiones podemos alimentar.</p>
+    <p class="cue" data-src-start="56.220" data-src-end="57.840">Dándole tiempo<br>a la satisfacción,</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  gsap.registerPlugin(MotionPathPlugin, DrawSVGPlugin);
+  var K = {{CONST}};
+  var T0 = K.T0, DUR = K.DUR, R = K.rig;
+  window.__timelines = window.__timelines || {};
+  // immediateRender:false en todo: un fromTo posterior no debe imponer su «from» al buscar hacia atrás
+  var tl = gsap.timeline({ paused: true, defaults: { immediateRender: false } });
+  window.__timelines["main"] = tl;
+
+  // ---------------------------------------------------------------- tiempo
+  function en(s) { return Math.max(0, Math.round((s - T0) * 1000) / 1000); }
+  // Easing «a pasos» alineado a una rejilla global de 12 fps: stop-motion real (todo salta a la vez).
+  function paso(ease, t0, d, fps) {
+    fps = fps || 12;
+    var e = gsap.parseEase(ease || "none");
+    return function (p) {
+      if (p >= 1) return e(1);
+      var q = Math.floor((t0 + p * d) * fps + 1e-6) / fps;
+      var pq = (q - t0) / d;
+      return e(pq < 0 ? 0 : pq > 1 ? 1 : pq);
+    };
+  }
+  // tw: tween en segundo FUENTE s; a pasos si 'pasos' (piel collage), continuo si no.
+  function tw(sel, vars, s, pasos) {
+    var t = en(s);
+    vars.duration = vars.duration == null ? 0.3 : vars.duration;
+    if (pasos) vars.ease = paso(vars.ease, t, vars.duration);
+    tl.to(sel, vars, t);
+  }
+  // «set» como tween de 1 ms: los tl.set de duración cero no se revertían al hacer seek hacia atrás.
+  function fijaT(sel, vars, t) { vars.duration = 0.001; vars.ease = "none"; tl.to(sel, vars, t); }
+  function fija(sel, vars, s) { fijaT(sel, vars, en(s)); }
+  // PRNG con semilla (determinista): temblores de cámara y saltos del collage
+  var semilla = 20240927;
+  function azar() { semilla = (semilla * 1664525 + 1013904223) % 4294967296; return semilla / 4294967296; }
+  function entre(a, b) { return a + (b - a) * azar(); }
+
+  // ---------------------------------------------------------------- cinemática del personaje
+  function rot(v, a) { var r = a * Math.PI / 180, c = Math.cos(r), s = Math.sin(r); return [v[0] * c - v[1] * s, v[0] * s + v[1] * c]; }
+  function copia(o) { var r = {}; for (var k in o) r[k] = o[k]; return r; }
+  function hombro(p, frente) { var v = rot([frente ? 86 : -86, -205], p.t || 0); return [R.x + R.s * v[0], R.y + R.s * (v[1] - 300)]; }
+  function mano(p, frente) {
+    var a = frente ? p.aF : p.aB, f = frente ? p.fF : p.fB;
+    var w = rot([0, 120], f); var v = rot([w[0], w[1] + 118], a);
+    v = rot([v[0] + (frente ? 86 : -86), v[1] - 205], p.t || 0);
+    return [R.x + R.s * v[0], R.y + R.s * (v[1] - 300)];
+  }
+  function pecho(p) { var v = rot([22, -150], p.t || 0); return [R.x + R.s * v[0], R.y + R.s * (v[1] - 300)]; }
+  // IK de dos huesos: coloca la palma en 'obj'. codo = +1 arriba / -1 abajo.
+  function ik(p, frente, obj, codo) {
+    var sh = hombro(p, frente), L1 = 118 * R.s, L2 = 120 * R.s;
+    var dx = obj[0] - sh[0], dy = obj[1] - sh[1];
+    var D = Math.min(Math.hypot(dx, dy), (L1 + L2) * 0.995); D = Math.max(D, Math.abs(L1 - L2) + 1);
+    var phi = Math.atan2(dy, dx), k = Math.acos((L1 * L1 + D * D - L2 * L2) / (2 * L1 * D));
+    var al = phi - (codo || 1) * k;
+    var ex = sh[0] + L1 * Math.cos(al), ey = sh[1] + L1 * Math.sin(al);
+    var be = Math.atan2(obj[1] - ey, obj[0] - ex);
+    var A = al * 180 / Math.PI - 90 - (p.t || 0), F = (be - al) * 180 / Math.PI;
+    A = ((A + 540) % 360) - 180; F = ((F + 540) % 360) - 180;
+    if (frente) { p.aF = A; p.fF = F; } else { p.aB = A; p.fB = F; }
+    return p;
+  }
+  var ART = { t: ".r-torso", h: ".r-cabeza", aF: ".r-brazoF", fF: ".r-anteF", aB: ".r-brazoB", fB: ".r-anteB" };
+  var RETARDO = { t: 0, h: 1, aF: 1, aB: 1, fF: 2, fB: 2 };  // solapamiento: el torso guía, los antebrazos arrastran
+  function pose(s, p, d, ease, pasos, lag) {
+    lag = lag == null ? 0.05 : lag;
+    for (var k in ART) if (p[k] != null)
+      tw(ART[k], { rotation: p[k] + "_short", duration: d, ease: ease }, s + RETARDO[k] * lag, pasos);
+    if (p.giro != null) fija(".r-cabeza", { scaleX: p.giro }, s);
+    if (p.sy != null) tw(".r-rig", { scaleY: R.s * p.sy, duration: d, ease: ease }, s, pasos);
+    if (p.ojo) tw(".r-ojo", { attr: { cx: p.ojo[0], cy: p.ojo[1] }, duration: Math.min(d, 0.3), ease: ease }, s, pasos);
+    if (p.ceja != null) tw(".r-ceja", { rotation: p.ceja, duration: Math.min(d, 0.3), ease: ease }, s, pasos);
+  }
+  function poseYa(p) {
+    for (var k in ART) if (p[k] != null) gsap.set(ART[k], { rotation: p[k] });
+  }
+
+  // ---------------------------------------------------------------- objetos, luz, cámara
+  var OBJ = {};
+  function colocar(n, st) { OBJ[n] = st; gsap.set(".w-" + n, { x: st.x, y: st.y, rotation: st.r, scale: st.s }); }
+  function objeto(n, st, s, d, ease, pasos) {
+    OBJ[n] = st;
+    tw(".w-" + n, { x: st.x, y: st.y, rotation: st.r, scale: st.s, duration: d, ease: ease }, s, pasos);
+  }
+  function objetoYa(n, st, s) { OBJ[n] = st; fija(".w-" + n, { x: st.x, y: st.y, rotation: st.r, scale: st.s }, s); }
+  function huesped(n, st) { st = st || OBJ[n]; var h = rot(K.huesped[n], st.r); return [st.x + h[0] * st.s, st.y + h[1] * st.s]; }
+  // pegar un recorte: aparece grande y se asienta con rebote, a 12 fps
+  function pegar(n, st, s) {
+    // fromTo explícito: el valor inicial no depende de lo que el objeto hacía antes
+    OBJ[n] = st;
+    var t = en(s);
+    tl.fromTo(".w-" + n, { x: st.x, y: st.y, rotation: st.r - 9, scale: st.s * 1.3, autoAlpha: 1 },
+      { x: st.x, y: st.y, rotation: st.r, scale: st.s, autoAlpha: 1, duration: 0.33, ease: paso("back.out(2.2)", t, 0.33) }, t);
+  }
+  function brillo(n, v, s, d) { tw(".o-brillo-" + n, { opacity: v, duration: d || 0.02, ease: "none" }, s, true); }
+
+  var LUZ = [0, 0];
+  function luzYa(p, s) { LUZ = p; if (s == null) gsap.set("#luz", { x: p[0], y: p[1] }); else fija("#luz", { x: p[0], y: p[1] }, s); }
+  function curva(a, b, alto) { return [{ x: a[0], y: a[1] }, { x: (a[0] + b[0]) / 2, y: Math.min(a[1], b[1]) - alto }, { x: b[0], y: b[1] }]; }
+  // viaje de la luz: estira en vuelo, aplasta al llegar, estela de 4 chispas que se queda atrás
+  function viaje(s, b, d, alto, ease, sinEstela) {
+    var a = LUZ, t = en(s), cam = curva(a, b, alto == null ? 120 : alto);
+    ease = ease || "power2.inOut";
+    tl.to("#luz", { motionPath: { path: cam, curviness: 1.1 }, duration: d, ease: ease }, t);
+    tl.to("#luz-cuerpo", { scaleX: 1.32, scaleY: 0.76, duration: d * 0.4, ease: "power2.out" }, t);
+    tl.to("#luz-cuerpo", { scaleX: 0.78, scaleY: 1.24, duration: 0.07, ease: "power1.in" }, t + d - 0.03);
+    tl.to("#luz-cuerpo", { scaleX: 1, scaleY: 1, duration: 0.4, ease: "elastic.out(1, 0.45)" }, t + d + 0.04);
+    if (!sinEstela) for (var i = 1; i <= 4; i++) {
+      var dl = i * 0.035;
+      fijaT(".e" + i, { x: a[0], y: a[1], autoAlpha: 0.7 - i * 0.12 }, t + dl);
+      tl.to(".e" + i, { motionPath: { path: cam, curviness: 1.1 }, duration: d, ease: ease }, t + dl);
+      tl.to(".e" + i, { autoAlpha: 0, duration: 0.1, ease: "none" }, t + d + dl - 0.02);
+    }
+    LUZ = b;
+  }
+  function anticipar(s, d) {  // la luz se encoge antes de saltar
+    tw("#luz-cuerpo", { scaleX: 1.34, scaleY: 0.66, duration: d || 0.22, ease: "power2.in" }, s);
+  }
+  function camara(s, c, d, ease, pasos) {
+    tw(".cam-xy", { x: -c.x, y: -c.y, duration: d, ease: ease }, s, pasos);
+    tw(".cam-rs", { scale: c.s, rotation: c.r || 0, duration: d, ease: ease }, s, pasos);
+  }
+  function camaraYa(c, s) {
+    fija(".cam-xy", { x: -c.x, y: -c.y }, s);
+    fija(".cam-rs", { scale: c.s, rotation: c.r || 0 }, s);
+  }
+  function rotulo(id, s, ancho, conGuia) {
+    var g = "#" + id;
+    fija(g, { autoAlpha: 1 }, s);
+    if (conGuia) tl.fromTo(g + " .guia", { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.28, ease: "power2.out" }, en(s));
+    var t = en(s) + (conGuia ? 0.2 : 0);
+    tl.to("#cl-" + id.slice(4) + " .cl", { attr: { width: ancho }, duration: 0.5, ease: "power1.inOut" }, t);
+    tl.fromTo(g + " .subraya", { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.3, ease: "power2.out" }, t + 0.42);
+  }
+
+  // ================================================================= ESTADO INICIAL (38.76)
+  // Orígenes fijados ANTES de cualquier transformación: si svgOrigin cambia después,
+  // GSAP compensa x/y (smoothOrigin) y los objetos acaban fuera de su sitio.
+  gsap.set(".w-casa, .w-moto, .w-tel, .cam-sh, #otra-mano, #vapor", { svgOrigin: "0 0" });
+  gsap.set("#mitad-arriba, #mitad-abajo", { svgOrigin: "600 700" });
+  gsap.set(".r-ceja", { svgOrigin: "27 -93" });
+  gsap.set(".cam-rs", { svgOrigin: "0 0", scale: 1, rotation: 0 });
+  gsap.set(".cam-xy", { x: -540, y: -960 });
+  gsap.set(".r-rig", { x: R.x, y: R.y, scale: R.s, svgOrigin: "0 0" });
+  gsap.set(".r-f, .r-pulgar, .r-cabeza, .r-torso, .r-brazoF, .r-anteF, .r-brazoB, .r-anteB", { svgOrigin: "0 0" });
+  gsap.set("#luz-cuerpo, #luz-pulso, #luz-vis, #luz-destello", { svgOrigin: "0 0" });
+  gsap.set(".rayo line", { attr: { "stroke-opacity": 0.95 } });
+  gsap.set("#fugas, #mitad-arriba, #mitad-abajo", { autoAlpha: 0 });
+  gsap.set(".rayo", { scaleX: 0.2, svgOrigin: "0 0" });
+  gsap.set(".fantasma", { autoAlpha: 0, scale: 0.6 });
+  gsap.set("#estela circle", { autoAlpha: 0 });
+  gsap.set("#grieta path", { drawSVG: "0%" });
+  gsap.set(".pt, .pt-imp", { autoAlpha: 0 });
+  gsap.set("#rot-impulso, #rot-anticipacion, #rot-negacion, #rot-satisfaccion, .fig", { autoAlpha: 0 });
+  gsap.set(".m-traz, #m-tiempo, .m-vapor", { drawSVG: "0%" });
+  gsap.set("#otra-mano", { x: 1400, y: 1128, rotation: -8, svgOrigin: "0 0" });
+  gsap.set(".w-tel, .w-casa", { autoAlpha: 0 });
+  gsap.set(".r-ojo", { attr: { cx: 26, cy: -74 } });
+  gsap.set("#t-lamina", { y: 14 });
+
+  // Muestras de papel del fondo (tres acomodos que saltan con cada vuelta)
+  var MUE = ["#sw1", "#sw2", "#sw3", "#sw4"];
+  var ACOMODO = [
+    [[560, 1120, -7], [860, 360, 6], [150, 620, -4], [930, 1560, 9]],
+    [[520, 1060, 5], [200, 330, -8], [930, 760, 7], [180, 1530, -6]],
+    [[600, 1180, -3], [760, 300, -11], [120, 860, 3], [860, 1620, 12]]
+  ];
+  function acomodo(i, s) { for (var j = 0; j < 4; j++) { var a = ACOMODO[i][j]; var v = { x: a[0], y: a[1], rotation: a[2] }; if (s == null) gsap.set(MUE[j], v); else fija(MUE[j], v, s); } }
+  acomodo(0);
+
+  // ================================================================= PIEL 2 · COLLAGE (38.76–44.24)
+  // Sostiene la moto: el brillo se le está apagando.
+  var SOSTEN = ik(ik({ t: -3, h: 10 }, true, [640, 846], -1), false, [540, 866], -1);
+  poseYa(SOSTEN); gsap.set(".r-cabeza", { rotation: 10 });
+  colocar("moto", { x: 610, y: 790, r: -8, s: 1.0 });
+  tl.fromTo(".w-moto", { autoAlpha: 1 }, { autoAlpha: 1, duration: 0.001, ease: "none" }, 0);  // visible desde el cuadro 0
+  gsap.set(".o-brillo-moto", { opacity: 1 });
+  luzYa(huesped("moto"));
+
+  // «a veces»: el objeto ya no alumbra tanto; ella lo mira, un poco hundida
+  brillo("moto", 0.3, 38.95, 0.6);
+  pose(38.9, { t: -6, h: 18, sy: 0.985, ceja: 8 }, 0.5, "power1.inOut", true);
+  // pausa 39.15–39.97: la luz se prepara
+  anticipar(39.62, 0.3);
+  pegar("tel", { x: 820, y: 560, r: 12, s: 1 }, 39.72);
+  // «el deseo»: salta a otro huésped
+  viaje(39.97, huesped("tel", { x: 820, y: 560, r: 12, s: 1 }), 0.4, 140);
+  brillo("moto", 0, 39.97, 0.1);
+  brillo("tel", 1, 40.37);
+  pose(40.0, { h: -18, ojo: [30, -80], ceja: -6 }, 0.17, "power2.out", true, 0);           // la cabeza sigue a la luz primero
+  pose(40.08, { t: 5, sy: 1 }, 0.25, "power2.out", true);
+  // «ya está buscando»: suelta la moto (cae), se agacha para tomar impulso y estira
+  objeto("moto", { x: 380, y: 1800, r: -70, s: 1.0 }, 40.42, 0.55, "power2.in", true);
+  var AGACHA = ik(ik({ t: -8, h: -12, sy: 0.95 }, true, [690, 880], -1), false, [560, 900], -1);
+  pose(40.4, AGACHA, 0.17, "power2.in", true, 0.02);
+  var ALCANZA = ik(ik({ t: 13, h: -22, sy: 1.03 }, true, [790, 668], -1), false, [735, 690], -1);
+  pose(40.58, ALCANZA, 0.25, "power3.out", true, 0.03);
+  // corte por coincidencia de forma: la cámara entra en la pantalla encendida...
+  var PANT = huesped("tel");
+  camara(40.86, { x: PANT[0], y: PANT[1], s: 3.4, r: 4 }, 0.3, "power2.in", true);
+  // ...y la pantalla ya es la ventana de una casa: «otro huésped»
+  var CASA1 = { x: PANT[0] + 50 * 1.3, y: PANT[1] - 36 * 1.3 + 8, r: 0, s: 1.3 };
+  CASA1.x = PANT[0] - (-38) * 1.3; CASA1.y = PANT[1] - 36 * 1.3;
+  fija(".w-tel", { autoAlpha: 0 }, 41.17);
+  brillo("tel", 0, 41.17, 0.05);
+  objetoYa("casa", CASA1, 41.17); fija(".w-casa", { autoAlpha: 1 }, 41.17);
+  fija(".o-brillo-casa", { opacity: 1 }, 41.17);
+  acomodo(1, 41.17);
+  var HACIA_CASA = ik(ik({ t: 12, h: -24, sy: 1.02 }, true, [760, 760], -1), false, [700, 790], -1);
+  pose(41.17, HACIA_CASA, 0.01, "none", true, 0);
+  camara(41.17, { x: 600, y: 900, s: 1.12, r: -2 }, 0.42, "power2.out", true);
+  // la abraza: la casa se encoge hasta sus brazos
+  var ABRAZO = ik(ik({ t: 2, h: 8, sy: 1 }, true, [640, 860], -1), false, [540, 880], -1);
+  pose(41.62, ABRAZO, 0.2, "power2.inOut", true, 0.02);
+  objeto("casa", { x: 590, y: 800, r: -6, s: 0.62 }, 41.62, 0.22, "power2.inOut", true);
+  var HCASA = huesped("casa");   // la luz viaja con la casa hasta sus brazos
+  tw("#luz", { x: HCASA[0], y: HCASA[1], duration: 0.22, ease: "power2.inOut" }, 41.62, true);
+  LUZ = HCASA;
+
+  // ---- vueltas cada vez más rápidas (silencio 41.87–44.04): el deseo siempre llega antes que ella
+  var FINAL = { casa: { x: 250, y: 470, r: -7, s: 0.95 }, moto: { x: 840, y: 430, r: -9, s: 0.95 }, tel: { x: 880, y: 830, r: 10, s: 0.92 } };
+  // 1 · a la moto
+  pegar("moto", FINAL.moto, 41.86);
+  anticipar(41.84, 0.1);
+  viaje(41.95, huesped("moto", FINAL.moto), 0.26, 150);
+  brillo("casa", 0, 41.95, 0.08); brillo("moto", 1, 42.21);
+  objeto("casa", { x: 420, y: 1850, r: 50, s: 0.62 }, 42.0, 0.45, "power2.in", true);
+  pose(42.05, ik(ik({ t: 11, h: -26, giro: 1, sy: 1.02 }, true, [800, 520], -1), false, [720, 600], -1), 0.2, "power3.out", true, 0.02);
+  camara(42.0, { x: 560, y: 880, s: 1.06, r: 1.5 }, 0.2, "power2.out", true);
+  // 2 · al teléfono
+  pegar("tel", FINAL.tel, 42.34);
+  viaje(42.4, huesped("tel", FINAL.tel), 0.2, 60);
+  brillo("moto", 0.35, 42.4, 0.08); brillo("tel", 1, 42.6);
+  pose(42.44, ik(ik({ t: 7, h: -4, sy: 1 }, true, [860, 740], -1), false, [760, 780], -1), 0.16, "power3.out", true, 0.02);
+  acomodo(2, 42.5);
+  // 3 · a la casa, del otro lado
+  pegar("casa", FINAL.casa, 42.66);
+  viaje(42.7, huesped("casa", FINAL.casa), 0.15, 90);
+  brillo("tel", 0.35, 42.7, 0.08); brillo("casa", 1, 42.85);
+  pose(42.72, ik(ik({ t: -12, h: -20, giro: -1 }, false, [300, 560], 1), true, [420, 600], 1), 0.15, "power3.out", true, 0.02);
+  acomodo(0, 42.84);
+  // 4, 5, 6 · ya no alcanza: solo gira la cabeza y los brazos se reparten
+  viaje(42.95, huesped("moto", FINAL.moto), 0.12, 70, "power1.inOut");
+  brillo("casa", 0.35, 42.95, 0.08); brillo("moto", 1, 43.07);
+  pose(42.98, ik({ t: 4, giro: 1, h: -24 }, true, [790, 540], -1), 0.1, "power2.out", true, 0.01);
+  viaje(43.1, huesped("tel", FINAL.tel), 0.1, 40, "power1.inOut");
+  brillo("moto", 0.35, 43.1, 0.08); brillo("tel", 1, 43.2);
+  acomodo(1, 43.09);
+  viaje(43.22, huesped("casa", FINAL.casa), 0.09, 50, "power1.inOut", true);
+  brillo("tel", 0.35, 43.22, 0.08); brillo("casa", 1, 43.31);
+  acomodo(2, 43.3);
+  // la última: queda suspendida en medio, y todo se congela
+  viaje(43.33, [600, 640], 0.24, 40, "power3.out", true);
+  brillo("casa", 0.35, 43.33, 0.08);
+  var CONGELA = ik(ik({ t: 3, h: -26, giro: 1, sy: 1.02, ojo: [28, -82] }, true, [760, 520], -1), false, [330, 560], 1);
+  pose(43.3, CONGELA, 0.18, "power2.out", true, 0.01);
+  // temblor de cámara a pasos, cada vez más fuerte, y congelado en su último desvío
+  for (var q = 41.92; q < 43.5; q += 1 / 12) {
+    var amp = 3 + (q - 41.92) / 1.6 * 14;
+    fija(".cam-sh", { x: entre(-amp, amp), y: entre(-amp, amp), rotation: entre(-amp, amp) / 9 }, q);
+  }
+  camara(43.3, { x: 560, y: 900, s: 1.04, r: -1.2 }, 0.18, "power2.out", true);
+  // ---- QUIETUD 43.55–44.04: solo late la luz
+
+  // ================================================================= TRANSFORMACIÓN · la luz quema el papel (44.04–45.0)
+  tl.to("#luz-destello", { opacity: 0.9, scale: 1.25, duration: 0.14, ease: "power2.out" }, en(44.02));
+  tl.to("#luz-destello", { opacity: 0, scale: 1, duration: 0.6, ease: "power2.in" }, en(44.18));
+  tw("#grieta-izq", { drawSVG: "100%", duration: 0.2, ease: "power1.in" }, 44.06, true);
+  tw("#grieta-der", { drawSVG: "100%", duration: 0.2, ease: "power1.in" }, 44.06, true);
+  fija("#mitad-arriba, #mitad-abajo", { autoAlpha: 1 }, 44.24);
+  fija("#collage-envoltura, #grieta", { autoAlpha: 0 }, 44.24);
+  // anticipación: las mitades se juntan un pelo, luego se abren en arco
+  tw("#mitad-arriba", { y: 6, duration: 0.09, ease: "power1.out" }, 44.24, true);
+  tw("#mitad-abajo", { y: -6, duration: 0.09, ease: "power1.out" }, 44.24, true);
+  tw("#mitad-arriba", { y: -1250, x: -120, rotation: -9, duration: 0.75, ease: "power2.in" }, 44.34, true);
+  tw("#mitad-abajo", { y: 1450, x: 90, rotation: 7, duration: 0.8, ease: "power2.in" }, 44.34, true);
+  fija("#mitad-arriba, #mitad-abajo", { autoAlpha: 0 }, 45.2);
+  tl.to("#grano", { opacity: 0.26, duration: 0.8, ease: "power1.inOut" }, en(44.3));
+
+  // ================================================================= PIEL 3 · PLANO TÉCNICO (44.24–58.80)
+  // «argumentar que este equilibrio»: el mundo se asienta; cámara estable por primera vez
+  tl.to(".cam-sh", { x: 0, y: 0, rotation: 0, duration: 1.4, ease: "power2.inOut" }, en(44.55));
+  camara(44.55, { x: 540, y: 960, s: 1 }, 1.5, "power2.inOut");
+  ["casa", "moto", "tel"].forEach(function (n, i) {
+    var e = K.esp[n];
+    objeto(n, { x: e[0], y: e[1], r: 0, s: e[2] }, 44.6 + i * 0.12, 1.3, "power2.inOut");
+    tw(".o-brillo-" + n, { opacity: 0, duration: 0.8, ease: "sine.out" }, 44.6);
+  });
+  var NEUTRA = { t: 0, h: 4, aF: -14, fF: -10, aB: 12, fB: 8, sy: 1, ojo: [26, -74], ceja: 0 };
+  pose(44.7, NEUTRA, 1.4, "power2.inOut", false, 0.1);
+  fija(".r-cabeza", { scaleX: 1 }, 44.9);
+  viaje(44.8, K.pecho, 1.4, 60, "sine.inOut", true);
+  tl.to("#t-lamina", { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out" }, en(45.1));
+  tl.fromTo(".fig", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out", stagger: 0.16 }, en(45.6));
+  // QUIETUD 46.27–47.0
+
+  // «se va a obtener una vez que»: la cámara se acerca despacio
+  camara(47.0, { x: 560, y: 840, s: 1.24 }, 2.3, "power1.inOut");
+  // «reconocemos los impulsos»: anticipación (la luz retrocede) y tirón hacia delante
+  tw("#luz", { x: K.pecho[0] - 16, y: K.pecho[1] + 6, duration: 0.3, ease: "power2.out" }, 49.18);
+  anticipar(49.18, 0.3);
+  LUZ = [K.pecho[0] - 16, K.pecho[1] + 6];
+  viaje(49.49, K.impulso, 0.26, 20, "expo.out");
+  var IMPULSO = ik({ t: 8, h: 2 }, true, [K.impulso[0] - 36, K.impulso[1] + 8], -1);
+  pose(49.5, { t: 8 }, 0.3, "power2.out");
+  tw(".r-brazoF", { rotation: IMPULSO.aF + "_short", duration: 0.32, ease: "power3.out" }, 49.52);
+  tw(".r-anteF", { rotation: IMPULSO.fF + "_short", duration: 0.5, ease: "back.out(2.6)" }, 49.55);
+  tw(".r-brazoB", { rotation: -6, duration: 0.45, ease: "power2.out" }, 49.56);
+  tl.to(".pt-imp", { autoAlpha: 0.9, duration: 0.05, stagger: 0.022, ease: "none" }, en(49.5));
+  // se mira el brazo: reconocer
+  pose(49.8, { h: 22, ojo: [30, -68], ceja: -10 }, 0.5, "sine.inOut");
+  rotulo("rot-impulso", 49.8, 150, true);
+  // QUIETUD 50.40–51.0
+
+  // «y escogemos»: se abre el plano; ella trae la luz sobre la mano
+  camara(51.0, { x: 560, y: 820, s: 1.06 }, 1.3, "sine.inOut");
+  var OFRECE = ik({ t: 2, h: 14, ojo: [30, -70], ceja: 0 }, true, K.mano, -1);
+  pose(51.05, OFRECE, 0.9, "power2.inOut", false, 0.08);
+  viaje(51.1, K.flotar, 0.9, 50, "sine.inOut", true);
+  tl.to(".pt-imp", { autoAlpha: 0.25, duration: 0.6, ease: "sine.out" }, en(51.1));
+  tl.to("#rot-impulso", { autoAlpha: 0.45, duration: 0.6, ease: "sine.out" }, en(51.3));
+  // «qué deseos o ilusiones»: la luz proyecta trayectorias hacia lo imaginado
+  ["casa", "moto", "tel"].forEach(function (n, i) {
+    var A = K.arcos[n], t = en(52.36) + i * 0.16;
+    tl.to(".pt-" + n, { autoAlpha: 0.85, duration: 0.04, stagger: 0.028, ease: "none" }, t);
+    var a = A[0], b = A[1], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 - A[2], pts = [];
+    for (var j = 0; j <= 8; j++) { var u = j / 8; pts.push({ x: (1 - u) * (1 - u) * a[0] + 2 * (1 - u) * u * mx + u * u * b[0], y: (1 - u) * (1 - u) * a[1] + 2 * (1 - u) * u * my + u * u * b[1] }); }
+    fijaT("#fa-" + n, { x: a[0], y: a[1], autoAlpha: 0.55, scale: 0.6 }, t + 0.1);
+    tl.to("#fa-" + n, { motionPath: { path: pts, curviness: 1 }, duration: 0.95, ease: "power1.inOut" }, t + 0.1);
+    tw(".o-brillo-" + n, { opacity: 0.55, duration: 0.3, ease: "sine.out" }, 52.36 + i * 0.16 + 1.0);
+  });
+  pose(52.5, { h: -10, ojo: [32, -80] }, 0.6, "sine.inOut");
+  rotulo("rot-anticipacion", 52.95, 250, false);
+
+  // «podemos alimentar»: NEGACIÓN — aprieta la luz para no alimentarla, y la luz se escapa más fuerte
+  var PUNO = mano(OFRECE, true);
+  gsap.set("#fugas", { x: PUNO[0], y: PUNO[1] - 18 });
+  gsap.set("#fuga-halo", { attr: { cx: PUNO[0], cy: PUNO[1] - 18 } });
+  camara(53.72, { x: PUNO[0] - 20, y: PUNO[1] + 20, s: 1.5 }, 1.0, "power2.inOut");
+  tw(".r-f", { scaleY: 1.18, rotation: 8, duration: 0.17, ease: "power2.out" }, 53.78);   // abre de más
+  tw(".r-pulgar", { rotation: -24, duration: 0.17, ease: "power2.out" }, 53.78);
+  pose(53.78, { h: 6, ceja: 12, ojo: [30, -70] }, 0.25, "power2.out");
+  tw(".r-f", { scaleY: 0.3, rotation: -6, duration: 0.13, ease: "power3.in" }, 53.95);     // cierra de golpe
+  tw(".r-pulgar", { rotation: 58, duration: 0.13, ease: "power3.in" }, 53.95);
+  tw("#luz-vis", { scale: 0.35, duration: 0.12, ease: "power2.in" }, 53.97);
+  fija("#luz-vis", { autoAlpha: 0 }, 54.09);
+  fija("#fugas", { autoAlpha: 1 }, 54.06);
+  tl.fromTo(".rayo", { scaleX: 0.25 }, { scaleX: 1.35, duration: 0.8, ease: "power2.in", stagger: 0.04 }, en(54.06));
+  gsap.set("#fuga-halo", { svgOrigin: PUNO[0] + " " + (PUNO[1] - 18) });
+  tl.fromTo("#fuga-halo", { opacity: 0.3, scale: 0.6 },
+    { opacity: 1, scale: 1.7, duration: 0.95, ease: "power2.in" }, en(54.06));
+  tl.to(".r-anteF", { rotation: "+=2", duration: 0.05, ease: "none", yoyo: true, repeat: 17 }, en(54.1));
+  tl.to(".fantasma", { autoAlpha: 0.2, duration: 0.3, ease: "sine.out" }, en(54.0));
+  rotulo("rot-negacion", 54.3, 170, true);
+  // silencio 54.88–56.14: sostiene la tensión y luego suelta despacio
+  tw(".r-f", { scaleY: 1, rotation: 0, duration: 0.8, ease: "sine.inOut" }, 55.3);
+  tw(".r-pulgar", { rotation: 0, duration: 0.8, ease: "sine.inOut" }, 55.3);
+  tl.to(".rayo", { scaleX: 0, duration: 0.55, ease: "power2.inOut" }, en(55.35));
+  tl.to("#fuga-halo", { opacity: 0, scale: 1, duration: 0.8, ease: "sine.inOut" }, en(55.35));
+  fija("#fugas", { autoAlpha: 0 }, 55.95);
+  fija("#luz-vis", { autoAlpha: 1 }, 55.45);
+  tw("#luz-vis", { scale: 1, duration: 0.6, ease: "back.out(1.5)" }, 55.45);
+  pose(55.3, { h: 12, ceja: -4, ojo: [30, -70] }, 0.7, "sine.inOut");
+  tl.to(".pt, .fantasma", { autoAlpha: 0.12, duration: 0.8, ease: "sine.inOut" }, en(55.4));
+  tl.to("#rot-anticipacion, #rot-negacion", { autoAlpha: 0.45, duration: 0.8, ease: "sine.inOut" }, en(55.6));
+  ["casa", "moto", "tel"].forEach(function (n) { tw(".o-brillo-" + n, { opacity: 0, duration: 0.8, ease: "sine.inOut" }, 55.4); });
+  camara(55.4, { x: 600, y: 900, s: 1.12 }, 1.1, "sine.inOut");
+
+  // «Dándole tiempo a la satisfacción»: la mesa se dibuja; la luz viaja despacio y se asienta en la olla
+  tl.to(".m-traz", { drawSVG: "100%", duration: 0.45, ease: "power1.inOut", stagger: 0.06 }, en(56.1));
+  camara(56.14, { x: 650, y: 960, s: 1.02 }, 1.7, "sine.inOut");
+  viaje(56.45, K.olla, 1.5, 120, "sine.inOut", true);
+  pose(56.6, ik({ t: -2, h: 20, ojo: [32, -66], ceja: 0 }, true, [700, 960], -1), 1.1, "sine.inOut", false, 0.1);
+  tl.to("#m-tiempo", { drawSVG: "100%", duration: 1.8, ease: "none" }, en(57.0));
+  tl.to("#olla-brillo", { opacity: 0.8, duration: 0.9, ease: "sine.out" }, en(57.75));
+  rotulo("rot-satisfaccion", 57.15, 270, true);
+  tl.to(".m-vapor", { drawSVG: "100%", duration: 0.7, ease: "sine.out", stagger: 0.2 }, en(57.9));
+  tl.to("#vapor", { y: -14, duration: 0.9, ease: "sine.inOut" }, en(57.9));
+  // QUIETUD 57.84–58.80 · la mano de otra persona llega a la mesa (puente hacia la malla)
+  tw("#otra-mano", { x: 962, duration: 0.7, ease: "power2.out" }, 58.02);
+  tw("#otra-mano", { rotation: -5, duration: 0.3, ease: "back.out(2)" }, 58.42);
+  pose(58.3, { h: 6, ojo: [34, -72] }, 0.4, "sine.inOut");
+
+  // ================================================================= CONSTANTES DE TODA LA PIEZA
+  // Pulso de la luz: mismo latido en todas las pieles (periodo 1.6 s)
+  tl.fromTo("#luz-pulso", { scale: 1, opacity: 0.78 }, { scale: 1.26, opacity: 1, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, Math.floor(DUR / 0.8) - 1) }, 0);
+  // grano: 12 fps en el collage, 24 fps (más fino) en el plano
+  tl.fromTo("#grano", { backgroundPosition: "0px 0px" }, { backgroundPosition: (73 * 66) + "px " + (41 * 66) + "px", duration: en(44.24), ease: "steps(66)" }, 0);
+  tl.to("#grano", { backgroundPosition: (73 * 66 + 57 * 350) + "px " + (41 * 66 + 89 * 350) + "px", duration: DUR - en(44.24), ease: "steps(350)" }, en(44.24));
+  // ligera respiración del personaje en el plano (movimiento secundario)
+  tl.to(".r-torso", { scaleY: 1.008, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 3 }, en(45.6));
+
+  // ---------------------------------------------------------------- subtítulos (tiempos fuente)
+  var cues = document.querySelectorAll("#subtitulos .cue");
+  for (var i = 0; i < cues.length; i++) {
+    var c = cues[i];
+    var ini = parseFloat(c.getAttribute("data-src-start")), fin = parseFloat(c.getAttribute("data-src-end"));
+    tl.fromTo(c, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12, ease: "none" }, en(ini));
+    tl.to(c, { autoAlpha: 0, duration: 0.12, ease: "none" }, Math.max(en(ini) + 0.12, en(fin) - 0.12));
+  }
+  tl.set({}, {}, DUR);
+})();
+</script>
+</body>
+</html>

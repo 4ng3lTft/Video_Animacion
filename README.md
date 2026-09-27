@@ -1,5 +1,7 @@
 # El equilibrio se va haciendo
 
+> **Versión 2 en curso:** ver `estado.md` (prueba de 20 s «collage → plano técnico», pendiente de revisión) y `guion/animatic.md`. Lo de abajo describe la versión 1.
+
 Animación vertical 2D (1080 × 1920, 30 fps) sobre la voz grabada de «narracion-corregida.srt».
 Duración provisional de la pieza completa: 131.467 s (3944 fotogramas); se ajusta al conocer la duración real del audio.
 
