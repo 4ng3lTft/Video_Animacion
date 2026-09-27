@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Piloto de 18 segundos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&amp;display=swap">
+<style>
+body{margin:0;font-family:"Literata",Georgia,serif;background:#1C1620;color:#F0E8DF}
+a{color:#E3A04D}a:hover{color:#F6C98C}
+</style>
+</helmet>
+<div style="width: 360px; height: 800px; box-sizing: border-box; padding: 28px 22px; display: flex; flex-direction: column; gap: 18px; background: #241C27; color: #F0E8DF; font-family: Literata, Georgia, serif">
+<div style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #8CAA9C">Piloto · 18 s · 1080 × 1920 · 30 fps</div>
+<div style="font-size: 24px; font-weight: 600; line-height: 1.2">Dos muestras, en su tiempo original</div>
+<div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.45">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-weight: 600">Muestra A · El umbral</div>
+<div style="color: #C9BDB3; font-variant-numeric: tabular-nums">piloto 0–10 · fuente 15.480–25.480</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-weight: 600">Muestra B · La malla</div>
+<div style="color: #C9BDB3; font-variant-numeric: tabular-nums">piloto 10–18 · fuente 86.780–94.780</div>
+</div>
+</div>
+<div style="font-size: 13px; line-height: 1.45; color: #C9BDB3; padding: 12px; background: #2F2533; border-radius: 4px">Sincronización basada en transcripción; pendiente de comprobar con audio.</div>
+<div style="font-size: 13px; line-height: 1.45; color: #C9BDB3">La composición es un HTML de HyperFrames (SVG, CSS y una línea de tiempo GSAP en pausa). Se reproduce y se recorre fotograma a fotograma en la vista previa.</div>
+<a href="https://claude.ai/artifact/NygfyrdZsj9DnpWE3w4LsD" style="display: inline-block; align-self: flex-start; padding: 12px 16px; min-height: 44px; box-sizing: border-box; background: #F0E8DF; color: #241C27; border-radius: 4px; font-size: 14px; font-weight: 600; text-decoration: none">Abrir la vista previa del piloto</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":360,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

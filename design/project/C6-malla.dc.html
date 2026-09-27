@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cuadro 6 · La malla</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&amp;display=swap">
+<style>
+body{margin:0;font-family:"Literata",Georgia,serif;background:#1C1620;color:#F0E8DF}
+</style>
+</helmet>
+<div style="width: 360px; height: 800px; display: flex; flex-direction: column; background: #1C1620; color: #F0E8DF; font-family: Literata, Georgia, serif">
+<svg viewBox="0 0 1080 1920" width="360" height="640" style="display: block; background: #241C27" role="img" aria-label="Una malla de hilos; uno cede bajo su carga y otros dos llegan a compartirla">
+<g fill="none" stroke-linecap="round">
+<path d="M 170 560 Q 355 600 540 500" stroke="#E3A04D" stroke-width="7"></path>
+<path d="M 540 500 Q 720 610 900 590" stroke="#F0E8DF" stroke-width="5"></path>
+<path d="M 170 560 Q 238 730 250 900" stroke="#8CAA9C" stroke-width="6"></path>
+<path d="M 540 500 Q 560 690 620 870" stroke="#E3A04D" stroke-width="7"></path>
+<path d="M 900 590 Q 882 780 930 960" stroke="#F0E8DF" stroke-width="5"></path>
+<path d="M 620 870 Q 775 955 930 960" stroke="#8CAA9C" stroke-width="6"></path>
+<path d="M 250 900 Q 170 1040 150 1180" stroke="#8CAA9C" stroke-width="6"></path>
+<path d="M 620 870 Q 572 1060 480 1210" stroke="#E3A04D" stroke-width="7"></path>
+<path d="M 930 960 Q 930 1080 860 1190" stroke="#F0E8DF" stroke-width="5"></path>
+<path d="M 150 1180 Q 315 1250 480 1210" stroke="#8CAA9C" stroke-width="6"></path>
+<path d="M 480 1210 Q 670 1260 860 1190" stroke="#E3A04D" stroke-width="7"></path>
+<path d="M 250 900 Q 435 1060 620 870" stroke="#F0E8DF" stroke-width="4"></path>
+<path d="M 170 560 Q 250 760 402 850" stroke="#8CAA9C" stroke-width="5"></path>
+<path d="M 540 500 Q 500 720 468 850" stroke="#E3A04D" stroke-width="5"></path>
+</g>
+<rect x="373" y="856" width="124" height="98" rx="8" fill="#3B2F40" stroke="#F0E8DF" stroke-width="4"></rect>
+<rect x="367" y="844" width="136" height="26" rx="7" fill="#45384B" stroke="#F0E8DF" stroke-width="4"></rect>
+<rect x="745" y="882" width="60" height="46" rx="6" fill="#3B2F40" stroke="#F0E8DF" stroke-width="3.5"></rect>
+<rect x="333" y="537" width="44" height="34" rx="5" fill="#3B2F40" stroke="#F0E8DF" stroke-width="3"></rect>
+<g fill="#F0E8DF">
+<circle cx="170" cy="560" r="14"></circle><circle cx="540" cy="500" r="16"></circle><circle cx="900" cy="590" r="13"></circle>
+<circle cx="250" cy="900" r="14"></circle><circle cx="620" cy="870" r="15"></circle><circle cx="930" cy="960" r="12"></circle>
+<circle cx="150" cy="1180" r="13"></circle><circle cx="480" cy="1210" r="15"></circle><circle cx="860" cy="1190" r="12"></circle>
+</g>
+<circle cx="250" cy="900" r="34" fill="none" stroke="#8CAA9C" stroke-width="3"></circle>
+<text x="540" y="1410" text-anchor="middle" font-family="Literata, Georgia, serif" font-size="50" fill="#F0E8DF"><tspan x="540">aunque también hay que escuchar</tspan><tspan x="540" dy="64">a quien está cargando de más.</tspan></text>
+</svg>
+<div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #8CAA9C; font-variant-numeric: tabular-nums">6 · 75.240–96.040</div>
+<div style="font-size: 20px; font-weight: 600">La malla</div>
+<div style="font-size: 13px; line-height: 1.45; color: #C9BDB3">Hilos que comparten nudos; cargas repartidas de forma desigual. Desde 92.140 un hilo cede y tiembla; dos más llegan a sostener con él. Su extremo descansa. Nadie lleva la cuenta.</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":360,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

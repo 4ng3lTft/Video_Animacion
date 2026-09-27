@@ -1,0 +1,217 @@
+<title>Equilibrio · piloto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --ciruela: #241C27;
+  --ciruela-2: #2F2533;
+  --ciruela-3: #3B2F40;
+  --linea: #4A3D50;
+  --ambar: #E3A04D;
+  --blanco: #F0E8DF;
+  --blanco-2: #C9BDB3;
+  --verde: #8CAA9C;
+  --fuente: "Literata", Georgia, "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--ciruela); color: var(--blanco);
+  font-family: var(--fuente); font-size: 16px; line-height: 1.5;
+  padding-inline: 16px; padding-block: 24px 40px;
+}
+.envoltura {
+  max-width: 1040px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 40px; align-items: start;
+}
+@media (max-width: 760px) { .envoltura { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+
+.escenario {
+  position: relative; width: 100%; max-width: 400px; aspect-ratio: 9 / 16;
+  background: #1C1620; border-radius: 6px; overflow: hidden; margin-inline: auto;
+  outline: 1px solid var(--linea);
+}
+.escenario iframe {
+  position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; border: 0;
+  transform-origin: 0 0; pointer-events: none;
+}
+.guias { position: absolute; inset: 0; pointer-events: none; display: none; }
+.guias.visible { display: block; }
+.guias div { position: absolute; border: 1px dashed rgba(140, 170, 156, 0.8); }
+
+.controles { display: grid; gap: 10px; margin-top: 14px; max-width: 400px; margin-inline: auto; }
+.fila { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button {
+  font: 600 14px/1 var(--fuente); color: var(--ciruela); background: var(--blanco);
+  border: 0; border-radius: 4px; padding: 12px 14px; min-height: 44px; cursor: pointer;
+}
+button.sec { background: var(--ciruela-3); color: var(--blanco); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ambar); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--ambar); min-height: 32px; }
+.tiempo { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--blanco-2); }
+.tiempo b { color: var(--blanco); font-weight: 600; }
+
+h1 { font-weight: 600; font-size: 30px; line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
+h2 { font-weight: 600; font-size: 16px; margin: 0 0 8px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--verde); }
+p { margin: 0; max-width: 62ch; }
+.panel { display: grid; gap: 28px; }
+.aviso {
+  background: var(--ciruela-2); border-radius: 4px; padding: 12px 14px; font-size: 14px; color: var(--blanco-2);
+}
+.aviso b { color: var(--ambar); font-weight: 600; }
+.saltos { display: flex; flex-wrap: wrap; gap: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.tabla { overflow-x: auto; }
+th, td { text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--linea); vertical-align: top; }
+th { font-weight: 600; color: var(--blanco-2); font-size: 13px; }
+td.t { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--blanco-2); }
+tr.activa td { color: var(--ambar); }
+.prov { color: var(--verde); font-size: 12px; }
+a { color: var(--ambar); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div class="envoltura">
+  <div>
+    <div class="escenario" id="escenario">
+      <iframe id="comp" src="piloto.html" title="Composición del piloto, 1080 por 1920" tabindex="-1"></iframe>
+      <div class="guias" id="guias" aria-hidden="true">
+        <div style="left:9.26%;right:13.89%;top:69.8%;bottom:22.9%;" title="subtítulos"></div>
+        <div style="left:10.19%;right:10.19%;top:15.6%;bottom:78.1%;" title="títulos"></div>
+      </div>
+    </div>
+    <div class="controles">
+      <input type="range" id="barra" min="0" max="18" step="0.0333333" value="7.2" aria-label="Posición en el piloto">
+      <div class="fila">
+        <button id="reproducir" type="button">Reproducir</button>
+        <button class="sec" id="atras" type="button" aria-label="Un fotograma atrás">−1 f</button>
+        <button class="sec" id="adelante" type="button" aria-label="Un fotograma adelante">+1 f</button>
+        <button class="sec" id="btn-guias" type="button" aria-pressed="false">Zonas seguras</button>
+      </div>
+      <div class="tiempo" id="tiempo" aria-live="off">piloto <b>07.200 s</b> · fuente <b>22.680 s</b></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div>
+      <h1>El equilibrio se va haciendo</h1>
+      <p>Piloto de 18 s, vertical 1080 × 1920 a 30 fps. Dos muestras separadas de la película, en su tiempo original: no es un resumen ni el comienzo.</p>
+    </div>
+
+    <div class="aviso">
+      <b>Sincronización basada en transcripción; pendiente de comprobar con audio.</b>
+      La grabación no está en el proyecto, así que el piloto no tiene sonido. Los subtítulos siguen los tiempos de «narracion-corregida.srt».
+    </div>
+
+    <div>
+      <h2>Ir a</h2>
+      <div class="saltos">
+        <button class="sec" type="button" data-ir="0">Muestra A · 15.480</button>
+        <button class="sec" type="button" data-ir="6.14">«justo antes…» · 21.620</button>
+        <button class="sec" type="button" data-ir="10">Muestra B · 86.780</button>
+        <button class="sec" type="button" data-ir="15.36">«aunque también…» · 92.140</button>
+      </div>
+    </div>
+
+    <div>
+      <h2>Subtítulos del piloto</h2>
+      <div class="tabla">
+        <table>
+          <thead><tr><th>Piloto</th><th>Fuente</th><th>Texto</th></tr></thead>
+          <tbody id="cues">
+            <tr data-a="0" data-b="1.76"><td class="t">0.000–1.760</td><td class="t">15.480–17.240</td><td>Pensemos en un paquete,</td></tr>
+            <tr data-a="3.38" data-b="4.82"><td class="t">3.380–4.820</td><td class="t">18.860–20.300</td><td>ya lo tenemos en nuestras manos,</td></tr>
+            <tr data-a="6.14" data-b="8.84"><td class="t">6.140–8.840</td><td class="t">21.620–24.320</td><td>justo antes de abrirlo. Ese momento.</td></tr>
+            <tr data-a="10" data-b="12.88"><td class="t">10.000–12.880</td><td class="t">86.780–89.660</td><td>cuidarnos, permite cuidar y ser cuidados <span class="prov">corte provisional</span></td></tr>
+            <tr data-a="12.88" data-b="14.5"><td class="t">12.880–14.500</td><td class="t">89.660–91.280</td><td>nos ayuda a estar bien, <span class="prov">corte provisional</span></td></tr>
+            <tr data-a="15.36" data-b="17.84"><td class="t">15.360–17.840</td><td class="t">92.140–94.620</td><td>aunque también hay que escuchar a quien está cargando de más.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h2>Qué mirar</h2>
+      <p>En A, el paquete llega cerrado, el hilo recorre la tapa y durante «Ese momento.» casi todo se queda quieto; solo respiran la rendija y el pulso del hilo. En B, con «aunque también hay que escuchar…», un hilo cede bajo su carga, tiembla y otros dos llegan a compartirla; el extremo liberado queda en reposo.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var DUR = 18, FPS = 30;
+  var MUESTRAS = [
+    { nombre: "Muestra A · El umbral", desde: 0, hasta: 10, fuente: 15.48 },
+    { nombre: "Muestra B · La malla", desde: 10, hasta: 18, fuente: 86.78 }
+  ];
+  var comp = document.getElementById("comp");
+  var esc = document.getElementById("escenario");
+  var barra = document.getElementById("barra");
+  var btn = document.getElementById("reproducir");
+  var reloj = document.getElementById("tiempo");
+  var filas = document.querySelectorAll("#cues tr");
+  var t = 7.2, tocando = false, ultimo = 0;
+
+  function ajustar() {
+    var esc_w = esc.getBoundingClientRect().width;
+    comp.style.transform = "scale(" + (esc_w / 1080) + ")";
+  }
+  if (window.ResizeObserver) new ResizeObserver(ajustar).observe(esc);
+  ajustar();
+
+  function reproductor() {
+    try {
+      var w = comp.contentWindow;
+      if (w && w.__player && w.__playerReady) return function (x) { w.__player.seek(x); };
+      if (w && w.__timelines && w.__timelines.main) return function (x) { w.__timelines.main.seek(x); };
+    } catch (e) {}
+    return null;
+  }
+  function fmt(x, d) { var s = x.toFixed(3); return (x < 10 ? "0" : "") + s; }
+  function pintar() {
+    var seek = reproductor();
+    if (seek) seek(t);
+    barra.value = t;
+    var m = t < 10 ? MUESTRAS[0] : MUESTRAS[1];
+    var f = m.fuente + (t - m.desde);
+    reloj.innerHTML = "piloto <b>" + fmt(t) + " s</b> · fuente <b>" + f.toFixed(3) + " s</b> · " + m.nombre;
+    for (var i = 0; i < filas.length; i++) {
+      var a = parseFloat(filas[i].dataset.a), b = parseFloat(filas[i].dataset.b);
+      filas[i].classList.toggle("activa", t >= a && t < b);
+    }
+  }
+  function ir(x) { t = Math.max(0, Math.min(DUR, x)); pintar(); }
+  function paso(ahora) {
+    if (!tocando) return;
+    var dt = (ahora - ultimo) / 1000; ultimo = ahora;
+    t += dt;
+    if (t >= DUR) { t = DUR; parar(); }
+    pintar();
+    if (tocando) requestAnimationFrame(paso);
+  }
+  function parar() { tocando = false; btn.textContent = "Reproducir"; }
+  btn.addEventListener("click", function () {
+    if (tocando) { parar(); return; }
+    if (t >= DUR - 0.01) t = 0;
+    tocando = true; btn.textContent = "Pausa"; ultimo = performance.now();
+    requestAnimationFrame(paso);
+  });
+  barra.addEventListener("input", function () { parar(); ir(parseFloat(barra.value)); });
+  document.getElementById("atras").addEventListener("click", function () { parar(); ir(Math.round(t * FPS - 1) / FPS); });
+  document.getElementById("adelante").addEventListener("click", function () { parar(); ir(Math.round(t * FPS + 1) / FPS); });
+  var bg = document.getElementById("btn-guias"), guias = document.getElementById("guias");
+  bg.addEventListener("click", function () {
+    var on = guias.classList.toggle("visible");
+    bg.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+  document.querySelectorAll("[data-ir]").forEach(function (b) {
+    b.addEventListener("click", function () { parar(); ir(parseFloat(b.dataset.ir)); });
+  });
+  // Espera a que la composición registre su línea temporal y muestra un fotograma en reposo
+  var intentos = 0;
+  (function esperar() {
+    if (reproductor() || intentos > 100) { pintar(); return; }
+    intentos++; setTimeout(esperar, 100);
+  })();
+})();
+</script>
