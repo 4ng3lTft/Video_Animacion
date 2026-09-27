@@ -1,1 +1,108 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-09-27T02:30:00Z"},"title":"El equilibrio se va haciendo","launch":{"view":"canvas"},"pages":[],"boards":{"Main.dc.html":{"x":0,"y":0,"w":360,"h":800,"title":"1 · Combustible"},"C2-umbral.dc.html":{"x":440,"y":0,"w":360,"h":800,"title":"2 · El umbral"},"C3-encuentro.dc.html":{"x":880,"y":0,"w":360,"h":800,"title":"3 · El encuentro"},"C4-escoger.dc.html":{"x":1320,"y":0,"w":360,"h":800,"title":"4 · Escoger y disfrutar"},"C5-condiciones.dc.html":{"x":1760,"y":0,"w":360,"h":800,"title":"5 · Las condiciones"},"C6-malla.dc.html":{"x":0,"y":920,"w":360,"h":800,"title":"6 · La malla"},"C7-sin-garantias.dc.html":{"x":440,"y":920,"w":360,"h":800,"title":"7 · Sin garantías"},"C8-corregir.dc.html":{"x":880,"y":920,"w":360,"h":800,"title":"8 · Corregir juntos"},"C9-continuar.dc.html":{"x":1320,"y":920,"w":360,"h":800,"title":"9 · Continuar"},"Piloto.dc.html":{"x":1760,"y":920,"w":360,"h":800,"title":"Piloto 18 s"}},"order":["Main.dc.html","C2-umbral.dc.html","C3-encuentro.dc.html","C4-escoger.dc.html","C5-condiciones.dc.html","C6-malla.dc.html","C7-sin-garantias.dc.html","C8-corregir.dc.html","C9-continuar.dc.html","Piloto.dc.html"],"notes":{"titulo":{"x":0,"y":-300,"text":"El equilibrio se va haciendo · storyboard en nueve cuadros","kind":"title1","maxW":2120}},"designSystems":[]}
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "C2-umbral.dc.html": {
+      "h": 800,
+      "title": "2 · El umbral",
+      "w": 360,
+      "x": 440,
+      "y": 0
+    },
+    "C3-encuentro.dc.html": {
+      "h": 800,
+      "title": "3 · El encuentro y las vueltas",
+      "w": 360,
+      "x": 880,
+      "y": 0
+    },
+    "C4-escoger.dc.html": {
+      "h": 800,
+      "title": "4 · Reconocer el mecanismo",
+      "w": 360,
+      "x": 1320,
+      "y": 0
+    },
+    "C5-condiciones.dc.html": {
+      "h": 800,
+      "title": "5 · Las condiciones",
+      "w": 360,
+      "x": 1760,
+      "y": 0
+    },
+    "C6-malla.dc.html": {
+      "h": 800,
+      "title": "6 · La malla",
+      "w": 360,
+      "x": 0,
+      "y": 920
+    },
+    "C7-sin-garantias.dc.html": {
+      "h": 800,
+      "title": "7 · Sin garantías",
+      "w": 360,
+      "x": 440,
+      "y": 920
+    },
+    "C8-corregir.dc.html": {
+      "h": 800,
+      "title": "8 · Corregir juntos",
+      "w": 360,
+      "x": 880,
+      "y": 920
+    },
+    "C9-continuar.dc.html": {
+      "h": 800,
+      "title": "9 · Continuar",
+      "w": 360,
+      "x": 1320,
+      "y": 920
+    },
+    "Main.dc.html": {
+      "h": 800,
+      "title": "1 · Combustible",
+      "w": 360,
+      "x": 0,
+      "y": 0
+    },
+    "Piloto.dc.html": {
+      "h": 800,
+      "title": "Piloto 18 s",
+      "w": 360,
+      "x": 1760,
+      "y": 920
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-27T02:30:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "titulo": {
+      "kind": "title1",
+      "maxW": 2120,
+      "text": "El equilibrio se va haciendo · storyboard en nueve cuadros",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "C2-umbral.dc.html",
+    "C3-encuentro.dc.html",
+    "C4-escoger.dc.html",
+    "C5-condiciones.dc.html",
+    "C6-malla.dc.html",
+    "C7-sin-garantias.dc.html",
+    "C8-corregir.dc.html",
+    "C9-continuar.dc.html",
+    "Piloto.dc.html"
+  ],
+  "pages": [],
+  "title": "El equilibrio se va haciendo"
+}
