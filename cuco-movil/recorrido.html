@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CUCO · recorrido móvil</title>
+<!--
+  Recorrido vertical de la versión móvil de CUCO · 1080 × 1920 · 30 fps · 90 s (2700 fotogramas).
+  La página real (sitio/index.html) se carga en un iframe de 390 × 760 px CSS, así que se ve
+  exactamente su diseño responsivo (@media max-width:650px).
+  Contrato: la línea de tiempo está en pausa; window.__player.seek(t) dibuja el instante t.
+  Todo el estado visible es una función pura de t (eventos + pistas con easing), por eso el
+  render fotograma a fotograma es determinista y se puede buscar cualquier tiempo en desorden.
+  Debe servirse por http (el iframe necesita el mismo origen): ver README del directorio.
+-->
+<style>
+  :root{--forest:#153e35;--deep:#0b241f;--lime:#d6edb9;--paper:#f8f9f5;--warm:#f3f1ea;--serif:Georgia,'Times New Roman',serif;--sans:Inter,'Segoe UI',Arial,sans-serif}
+  html,body{margin:0;background:#06120f;overflow:hidden}
+  #stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;transform-origin:0 0;
+    background:radial-gradient(120% 75% at 48% 40%,#1f5044 0%,#153e35 42%,#0b241f 100%);font-family:var(--sans);color:var(--warm)}
+  #glow{position:absolute;left:0;top:0;width:1100px;height:1100px;margin:-550px 0 0 -550px;border-radius:50%;
+    background:radial-gradient(circle,rgba(214,237,185,.20) 0%,rgba(214,237,185,.07) 38%,rgba(214,237,185,0) 68%)}
+  #orbit{position:absolute;left:515px;top:960px;width:1500px;height:1500px;margin:-750px 0 0 -750px;opacity:.09}
+  #grain{position:absolute;inset:0;opacity:.11;mix-blend-mode:overlay;pointer-events:none}
+  #vignette{position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 50%,transparent 55%,rgba(3,12,10,.55) 100%);pointer-events:none}
+
+  #cam{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:540px 960px}
+  #phone{position:absolute;left:0;top:0;box-shadow:0 60px 120px rgba(0,10,8,.55),0 0 0 2px rgba(214,237,185,.10) inset}
+  #screen{position:absolute;overflow:hidden;background:var(--paper)}
+  #site{position:absolute;left:0;top:0;width:390px;height:760px;border:0;transform-origin:0 0;background:var(--paper)}
+  #mark{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px}
+
+  #brand{position:absolute;left:0;top:0;width:600px;margin-left:-300px;text-align:center;font-size:56px;font-weight:750;letter-spacing:-.07em;line-height:1;color:var(--warm)}
+  #word{position:absolute;left:0;top:0;text-align:center;transform-origin:50% 50%;width:600px;margin-left:-300px}
+  #word .name{display:block;font-size:132px;font-weight:750;letter-spacing:-.07em;line-height:1;color:var(--warm)}
+  #word .name span{display:inline-block}
+  #word .tag{display:block;margin-top:14px;font-size:34px;letter-spacing:.08em;color:#c9d8c4}
+
+  #chaps{position:absolute;left:100px;top:150px;width:830px;height:110px}
+  .chap{position:absolute;left:0;right:0;top:0;text-align:center;font-family:var(--serif);font-size:68px;line-height:1.1;letter-spacing:-.03em;color:var(--warm);white-space:nowrap}
+  .chap .m{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 .03em .14em}
+  .chap .w{display:inline-block}
+  #progress{position:absolute;left:190px;top:278px;width:650px;height:5px;display:flex;gap:8px}
+  #progress i{flex:1;border-radius:3px;background:rgba(214,237,185,.18);overflow:hidden;position:relative}
+  #progress i b{position:absolute;inset:0;background:var(--lime);transform-origin:0 50%;transform:scaleX(0)}
+
+  #subs{position:absolute;left:100px;width:830px;bottom:70px;height:170px}
+  .sub{position:absolute;left:0;right:0;bottom:0;margin:0;text-align:center;opacity:0}
+  .sub span{display:inline-block;max-width:830px;box-sizing:border-box;padding:14px 28px 16px;border-radius:24px;
+    background:rgba(8,27,23,.86);box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:42px;line-height:1.28;font-weight:600;letter-spacing:-.01em;color:#f6f3ea}
+
+  #finger{position:absolute;left:0;top:0;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;opacity:0;
+    background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.78),rgba(240,246,234,.5));border:3px solid rgba(21,62,53,.55);box-shadow:0 10px 26px rgba(0,20,14,.35)}
+  #ripple{position:absolute;left:0;top:0;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50%;border:4px solid var(--lime);opacity:0;box-sizing:border-box}
+
+  #outro{position:absolute;left:100px;width:830px;top:1240px;text-align:center}
+  #tagline{font-family:var(--serif);font-style:italic;font-size:62px;line-height:1.15;color:var(--warm);opacity:0}
+  #credits{margin-top:34px;font-size:30px;letter-spacing:.06em;color:#b9cbb5;opacity:0}
+
+  #controls{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;align-items:center;padding:8px 12px;background:rgba(0,0,0,.75);color:#fff;font:13px/1 Arial,sans-serif}
+  #controls input{flex:1}
+  #controls button{font:inherit;padding:6px 12px}
+  body.render #controls{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div>
+  <svg id="orbit" viewBox="0 0 100 100" aria-hidden="true"><path d="M74 26a34 34 0 1 0 0 48" fill="none" stroke="#d6edb9" stroke-width=".35" stroke-linecap="round"/><circle cx="74" cy="50" r="3.4" fill="none" stroke="#d6edb9" stroke-width=".35"/></svg>
+
+  <div id="cam">
+    <div id="phone">
+      <div id="screen"><iframe id="site" src="sitio/index.html" title="CUCO versión móvil" scrolling="no"></iframe></div>
+      <svg id="mark" viewBox="0 0 40 40" aria-hidden="true"><path id="markArc" d="M27 12a11 11 0 1 0 0 16" fill="none" stroke="#d6edb9" stroke-width="4.4" stroke-linecap="round"/><circle id="markDot" cx="27" cy="20" r="3" fill="#d6edb9"/></svg>
+    </div>
+  </div>
+
+  <!-- Capa de títulos (editable): un capítulo por sección de la página. -->
+  <div id="chaps">
+    <div class="chap" data-start="4.6"  data-end="11.9">Inicio</div>
+    <div class="chap" data-start="12.0" data-end="19.8">Hoy me siento…</div>
+    <div class="chap" data-start="20.0" data-end="24.6">Menú</div>
+    <div class="chap" data-start="24.8" data-end="34.4">Cómo funciona</div>
+    <div class="chap" data-start="34.6" data-end="48.3">Autoevaluación</div>
+    <div class="chap" data-start="48.4" data-end="56.5">Solicitud de apoyo</div>
+    <div class="chap" data-start="56.6" data-end="67.8">Vista de psicología</div>
+    <div class="chap" data-start="67.9" data-end="76.8">Apoyo inmediato</div>
+    <div class="chap" data-start="77.0" data-end="84.6">Tus dudas</div>
+  </div>
+  <div id="progress"></div>
+
+  <div id="brand">cuco</div>
+  <div id="word"><span class="name">cuco</span><span class="tag">Cuenta Conmigo</span></div>
+  <div id="outro"><div id="tagline">Un primer paso, a tu manera.</div><div id="credits">Preprototipo · Proyecto académico ITSC · 2026</div></div>
+
+  <!-- Capa de subtítulos (editable): máximo 2 renglones, dentro de x = 100–930 px. -->
+  <div id="subs">
+    <p class="sub" data-start="0.9"  data-end="4.3"><span>Así se ve CUCO, Cuenta Conmigo, en el celular.</span></p>
+    <p class="sub" data-start="4.8"  data-end="8.6"><span>Un espacio de orientación emocional para estudiantes del ITSC.</span></p>
+    <p class="sub" data-start="8.8"  data-end="11.9"><span>Entre clases y pendientes, también estás tú.</span></p>
+    <p class="sub" data-start="12.2" data-end="15.6"><span>Empieza con algo simple: ¿cómo te sientes hoy?</span></p>
+    <p class="sub" data-start="15.8" data-end="19.6"><span>A tu ritmo y sin juicios. En la demo, nada se guarda.</span></p>
+    <p class="sub" data-start="20.0" data-end="24.6"><span>El menú te lleva a cada sección con un toque.</span></p>
+    <p class="sub" data-start="25.0" data-end="29.4"><span>Tres pasos: de lo que sientes, al apoyo que necesitas.</span></p>
+    <p class="sub" data-start="29.6" data-end="34.4"><span>Primero, una autoevaluación para reconocer cómo te has sentido.</span></p>
+    <p class="sub" data-start="35.2" data-end="38.6"><span>Antes de iniciar, CUCO explica cómo se cuida tu información.</span></p>
+    <p class="sub" data-start="38.9" data-end="43.1"><span>La pregunta es ilustrativa: sin puntuación y sin guardar respuestas.</span></p>
+    <p class="sub" data-start="43.4" data-end="48.2"><span>La orientación sugiere un siguiente paso. No da diagnósticos.</span></p>
+    <p class="sub" data-start="48.6" data-end="52.8"><span>Si se sugiere atención, una solicitud te conecta con psicología.</span></p>
+    <p class="sub" data-start="53.0" data-end="56.4"><span>En esta maqueta los datos son ficticios: no se envía nada.</span></p>
+    <p class="sub" data-start="56.9" data-end="61.6"><span>Del otro lado, psicología recibe la solicitud y le da seguimiento.</span></p>
+    <p class="sub" data-start="61.9" data-end="67.4"><span>Al marcarla como atendida, el panel se actualiza al instante.</span></p>
+    <p class="sub" data-start="67.9" data-end="72.0"><span>¿Lo necesitas ahora? No esperes al test.</span></p>
+    <p class="sub" data-start="72.2" data-end="76.6"><span>Línea de la Vida: 800&nbsp;911&nbsp;2000. Emergencias: 911.</span></p>
+    <p class="sub" data-start="77.0" data-end="80.8"><span>Las dudas se responden con claridad, desde el inicio.</span></p>
+    <p class="sub" data-start="81.0" data-end="84.6"><span>Proyecto académico vinculado al ODS&nbsp;3: Salud y bienestar.</span></p>
+  </div>
+
+  <div id="ripple"></div>
+  <div id="finger"></div>
+  <svg id="grain" width="1080" height="1920" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+  <div id="vignette"></div>
+</div>
+<div id="controls"><button id="play">▶︎</button><input id="scrub" type="range" min="0" max="90" step="0.0333" value="0"><span id="clock">0.00 s</span></div>
+
+<script>
+(() => {
+'use strict';
+const FPS = 30, DUR = 90;
+
+/* ---------- Easing ---------- */
+const E = {
+  lin: x => x,
+  inOut3: x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2,
+  inOut4: x => x < .5 ? 8*x*x*x*x : 1 - Math.pow(-2*x + 2, 4)/2,
+  inOutSine: x => -(Math.cos(Math.PI*x) - 1)/2,
+  out3: x => 1 - Math.pow(1 - x, 3),
+  in3: x => x*x*x,
+  outBack: x => { const c1 = 1.55, c3 = c1 + 1; return 1 + c3*Math.pow(x - 1, 3) + c1*Math.pow(x - 1, 2); },
+};
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, t0, d) => clamp((t - t0)/d);
+const mix = (a, b, p) => a + (b - a)*p;
+
+/* Pista de keyframes [t, valor, easing del tramo que llega a ese keyframe]. 'step' = salto en t. */
+function track(kfs) {
+  return t => {
+    if (t <= kfs[0][0]) return kfs[0][1];
+    for (let i = 1; i < kfs.length; i++) {
+      const [t1, v1, e] = kfs[i];
+      if (t < t1) {
+        const [t0, v0] = kfs[i - 1];
+        if (e === 'step') return v0;
+        return mix(v0, v1, E[e || 'inOut3']((t - t0)/(t1 - t0)));
+      }
+    }
+    return kfs[kfs.length - 1][1];
+  };
+}
+
+/* ---------- Geometría ---------- */
+const K = 1.66;                       // escala del iframe (390 px CSS → 647 px)
+const BEZ = 16;                       // marco del teléfono
+const SCR_W = 390*K, SCR_H = 760*K;
+const PH = { w: SCR_W + 2*BEZ, h: SCR_H + 2*BEZ, cx: 515, cy: 330 + (SCR_H + 2*BEZ)/2, r: 64 };
+const MK = { w: 300, h: 300, cx: 515, cy: 820, r: 92 };   // el logo del que nace el teléfono
+const C = { x: 540, y: 960 };         // origen de la cámara
+const Q = { x: 515, y: 960 };         // dónde cae el punto enfocado
+
+/* ---------- Guion de interacción (tiempos en s) ---------- */
+// Estado discreto: cada evento fija campos; el estado en t es la suma de los eventos con t_e ≤ t.
+const EVENTS = [
+  [15.0,  { mood: 'Regular' }],
+  [20.8,  { menu: true }],
+  [22.3,  { menu: false, navActive: '#como-funciona' }],
+  [34.6,  { dialog: 'assessment', screen: 0 }],
+  [38.8,  { screen: 1 }],
+  [41.9,  { answer: 1 }],
+  [43.3,  { screen: 2 }],
+  [48.4,  { dialog: 'ticket' }],
+  [56.6,  { dialog: 'admin' }],
+  [62.6,  { attended: true }],
+  [65.8,  { filter: 'done' }],
+  [68.05, { dialog: null }],
+  [69.0,  { navActive: null }],
+  [79.6,  { faq2: true }],
+];
+const INITIAL = { mood: null, menu: false, navActive: '#inicio', dialog: null, screen: 0, answer: null, attended: false, filter: 'all', faq2: false };
+function stateAt(t) {
+  const st = { ...INITIAL };
+  for (const [te, set] of EVENTS) if (t >= te) Object.assign(st, set);
+  return st;
+}
+
+// Toques: el dedo llega, anticipa (sube un poco), presiona y se retira.
+const TAPS = [
+  [15.0, '.mood-option', 2],
+  [20.8, '#menu-toggle'],
+  [22.3, '.nav a[href="#como-funciona"]'],
+  [34.6, '.step .text-button', 0],
+  [38.8, '[data-screen="0"] [data-screen-to="1"]'],
+  [41.9, '.answer-option', 1],
+  [43.3, '#sample-next'],
+  [48.4, '[data-screen="2"] [data-open="ticket"]'],
+  [56.6, '#ticket-dialog [data-open="admin"]'],
+  [62.6, '[data-attend="DEMO-001"]'],
+  [65.8, '[data-filter="done"]'],
+  [67.7, '#admin-dialog .dialog-close'],
+  [69.0, '.header .help-link'],
+  [79.6, '.faq-list details:nth-child(2) summary'],
+].map(([t, sel, idx]) => ({ t, sel, idx: idx || 0, x: 0, y: 0 }));
+
+// Animaciones de diálogo: entrada (con o sin velo), cambio de pantalla y salida.
+const DLG_IN = [[34.6, true], [48.4, false], [56.6, false]];
+const SCREEN_IN = [38.8, 43.3];
+const DLG_OUT = [67.7, 68.05];
+const POP_AT = 62.75;
+
+// Desplazamientos (px CSS de la página).
+const scrollKF = [[0,0],[12.0,0],[13.6,300],[22.5,300],[24.2,1320,'inOut4'],[26.0,1320],[31.5,1950,'inOutSine'],[32.0,1950],[33.4,1560],
+  [69.25,1560],[70.9,3445,'inOut4'],[76.9,3445],[78.4,4254],[81.0,4254],[82.8,'max']];
+const dlgScroll = track([[0,0],[36.9,0],[38.0,150],[38.8,0,'step'],[40.6,0],[41.4,157],[43.3,0,'step'],[46.4,0],[47.4,125],[48.4,0,'step'],
+  [51.0,0],[52.2,150],[54.6,150],[55.6,249],[56.6,0,'step'],[59.2,0],[60.4,200],[66.3,200],[67.1,0]]);
+const tableScroll = track([[0,0],[60.8,0],[61.8,274]]);
+let pageScroll = null;   // se arma al conocer la altura real ('max')
+
+// Cámara: [t, escala, foco x, foco y (px CSS del iframe), easing]; foco null = encuadre completo.
+const CAM = [
+  [0,1,null],[5.0,1,null],[6.6,1.28,195,235],[9.2,1.28,195,235,'lin'],[11.0,1,null],
+  [13.5,1,null],[14.8,1.3,195,256],[18.2,1.3,195,256,'lin'],[19.4,1,null],
+  [25.2,1,null],[33.0,1.06,195,400,'inOutSine'],[34.0,1,null],
+  [62.9,1,null],[63.8,1.35,195,158],[64.6,1.35,195,158,'lin'],[65.4,1,null],
+  [71.2,1,null],[72.4,1.3,195,430],[73.8,1.3,195,430,'lin'],[74.8,1.3,195,640],[75.6,1.3,195,640,'lin'],[76.6,1,null],
+  [82.9,1,null],[83.9,1.15,195,650],[84.8,1,null],
+];
+const camT = CAM.map(([t, s, x, y, e]) => {
+  if (x === null) return [t, 1, 0, 0, e];
+  const px = PH.cx - SCR_W/2 + x*K, py = 330 + BEZ + y*K;
+  return [t, s, Q.x - C.x - s*(px - C.x), Q.y - C.y - s*(py - C.y), e];
+});
+const camS = track(camT.map(k => [k[0], k[1], k[4]]));
+const camX = track(camT.map(k => [k[0], k[2], k[4]]));
+const camY = track(camT.map(k => [k[0], k[3], k[4]]));
+
+/* ---------- DOM ---------- */
+const $ = s => document.querySelector(s);
+const stage = $('#stage'), cam = $('#cam'), phone = $('#phone'), screenEl = $('#screen'), iframe = $('#site');
+const mark = $('#mark'), markArc = $('#markArc'), markDot = $('#markDot');
+const brand = $('#brand'), word = $('#word'), wordName = $('#word .name'), wordSub = $('#word .tag');
+const finger = $('#finger'), ripple = $('#ripple'), glow = $('#glow'), orbit = $('#orbit');
+const tagline = $('#tagline'), credits = $('#credits');
+const subs = [...document.querySelectorAll('.sub')].map(el => ({ el, a: +el.dataset.start, b: +el.dataset.end }));
+const chaps = [...document.querySelectorAll('.chap')].map(el => {
+  const words = el.textContent.trim().split(/\s+/);
+  el.innerHTML = words.map(w => `<span class="m"><span class="w">${w}</span></span>`).join(' ');
+  return { el, a: +el.dataset.start, b: +el.dataset.end, ws: [...el.querySelectorAll('.w')] };
+});
+const progress = $('#progress'), chapsEl = $('#chaps');
+progress.innerHTML = chaps.map(() => '<i><b></b></i>').join('');
+const bars = [...progress.querySelectorAll('b')];
+wordName.innerHTML = [...'cuco'].map(c => `<span>${c}</span>`).join('');
+const letters = [...wordName.querySelectorAll('span')];
+const ARC_LEN = markArc.getTotalLength();
+markArc.style.strokeDasharray = ARC_LEN;
+
+let D = null, S = {};   // documento del iframe y sus nodos
+const FB0 = 'Este espacio es una demostración; tu elección no se guarda.';
+const EV0 = 'Puedes cambiar el estado de los ejemplos para explorar la interfaz.';
+
+function setupSite() {
+  D = iframe.contentDocument;
+  const st = D.createElement('style');
+  st.textContent = `html{scroll-behavior:auto!important;scrollbar-width:none}::-webkit-scrollbar{display:none}
+    *,*:before,*:after{transition:none!important;animation:none!important;caret-color:transparent}
+    :focus,:focus-visible{outline:none!important}
+    dialog{scrollbar-width:none}
+    dialog[open]{transform:translateY(calc(var(--dy,0)*1px));opacity:var(--do,1)}
+    dialog [data-screen]:not([hidden]){opacity:var(--so,1);transform:translateX(calc(var(--sx,0)*1px))}
+    #pending-count,#done-count{display:inline-block;transform:scale(var(--pop,1));transform-origin:20% 70%}`;
+  D.head.appendChild(st);
+  S.backdrop = D.createElement('style'); D.head.appendChild(S.backdrop);
+  const q = s => D.querySelector(s), qa = s => [...D.querySelectorAll(s)];
+  Object.assign(S, {
+    root: D.scrollingElement, moods: qa('input[name="mood"]'), fb: q('#mood-feedback'),
+    nav: q('#navigation'), menu: q('#menu-toggle'), navLinks: qa('.nav a'), faq2: q('.faq-list details:nth-child(2)'),
+    screens: qa('[data-screen]'), stages: qa('[data-stage]'), answers: qa('input[name="sample-answer"]'), next: q('#sample-next'),
+    tbody: q('#admin-dialog tbody'), filters: qa('[data-filter]'), pending: q('#pending-count'), done: q('#done-count'),
+    empty: q('#admin-empty'), event: q('#admin-event'), table: q('.table-wrap'),
+    dialogs: { assessment: q('#assessment-dialog'), ticket: q('#ticket-dialog'), admin: q('#admin-dialog') },
+  });
+  S.tbody0 = S.tbody.innerHTML;
+}
+
+/* Aplica el estado discreto; solo toca el DOM cuando algo cambia. */
+let last = {};
+function applyState(st) {
+  const ch = k => last[k] !== st[k];
+  if (ch('mood')) {
+    S.moods.forEach(i => i.checked = i.value === st.mood);
+    S.fb.textContent = st.mood ? 'Seleccionaste «' + st.mood + '». Puedes explorar el recorrido cuando quieras.' : FB0;
+  }
+  if (ch('menu')) {
+    S.nav.classList.toggle('open', st.menu);
+    S.menu.setAttribute('aria-expanded', String(st.menu));
+  }
+  if (ch('navActive')) S.navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === st.navActive));
+  if (ch('faq2')) S.faq2.open = st.faq2;
+  if (ch('screen')) {
+    S.screens.forEach(s => s.hidden = +s.dataset.screen !== st.screen);
+    S.stages.forEach(s => s.classList.toggle('current', +s.dataset.stage === st.screen));
+  }
+  if (ch('answer')) { S.answers.forEach((i, k) => i.checked = k === st.answer); S.next.disabled = st.answer === null; }
+  if (ch('attended') || ch('filter')) {
+    S.tbody.innerHTML = S.tbody0;
+    S.event.textContent = EV0;
+    if (st.attended) {
+      const b = S.tbody.querySelector('[data-attend="DEMO-001"]'), row = b.closest('tr'), status = row.querySelector('.status');
+      row.dataset.ticketState = 'done'; status.textContent = 'Atendida'; status.classList.remove('pending');
+      const done = D.createElement('span'); done.textContent = 'Seguimiento completado'; done.style.color = 'var(--muted)'; done.style.fontSize = '.8125rem';
+      b.replaceWith(done);
+      S.event.textContent = 'DEMO-001 marcada como atendida en esta demostración. El cambio no se guarda.';
+    }
+    const rows = [...S.tbody.querySelectorAll('[data-ticket-state]')];
+    let shown = 0;
+    rows.forEach(r => { r.hidden = st.filter !== 'all' && r.dataset.ticketState !== st.filter; if (!r.hidden) shown++; });
+    S.empty.hidden = shown !== 0;
+    const pending = rows.filter(r => r.dataset.ticketState === 'pending').length;
+    S.pending.textContent = String(pending); S.done.textContent = String(rows.length - pending);
+    S.filters.forEach(f => f.setAttribute('aria-pressed', String(f.dataset.filter === st.filter)));
+  }
+  if (ch('dialog')) {
+    for (const [name, d] of Object.entries(S.dialogs)) if (name !== st.dialog && d.open) d.close();
+    if (st.dialog) { const d = S.dialogs[st.dialog]; if (!d.open) d.showModal(); D.activeElement && D.activeElement.blur(); }
+  }
+  last = st;
+}
+
+function applySite(t) {
+  const st = stateAt(t);
+  applyState(st);
+  S.root.scrollTop = pageScroll(t);
+  let bo = 0;
+  if (st.dialog) {
+    const d = S.dialogs[st.dialog];
+    d.scrollTop = dlgScroll(t);
+    let dy = 0, dop = 1; bo = 1;
+    const open = DLG_IN.filter(([t0]) => t >= t0).pop();
+    if (open) {
+      const p = prog(t, open[0], .5);
+      dy = (1 - E.out3(p))*160; dop = clamp(p*4);
+      if (open[1]) bo = E.out3(p);
+    }
+    if (t >= DLG_OUT[0]) { const q = prog(t, DLG_OUT[0], DLG_OUT[1] - DLG_OUT[0]); dy = E.in3(q)*200; dop = 1 - E.out3(q); bo = 1 - q; }
+    d.style.setProperty('--dy', dy.toFixed(2));
+    d.style.setProperty('--do', dop.toFixed(3));
+    const sc = SCREEN_IN.filter(t0 => t >= t0).pop();
+    const sp = sc === undefined ? 1 : prog(t, sc, .4);
+    d.style.setProperty('--so', E.out3(sp).toFixed(3));
+    d.style.setProperty('--sx', ((1 - E.out3(sp))*26).toFixed(2));
+    if (st.dialog === 'admin') {
+      S.table.scrollLeft = tableScroll(t);
+      const pp = prog(t, POP_AT, .45);
+      d.style.setProperty('--pop', (1 + .32*Math.sin(Math.PI*pp)).toFixed(3));
+    }
+  }
+  const bt = `dialog::backdrop{opacity:${bo.toFixed(3)}}`;
+  if (S.backdrop.textContent !== bt) S.backdrop.textContent = bt;
+}
+
+/* ---------- Capa exterior: logo ↔ teléfono, cámara, títulos, subtítulos, dedo ---------- */
+function applyStage(t) {
+  // Logo → teléfono (con anticipación) y teléfono → logo al final.
+  const grow = E.inOut3(prog(t, 3.25, 1.25)) * (1 - E.inOut3(prog(t, 85.1, 1.3)));
+  const squash = 1 - .07*Math.sin(Math.PI*prog(t, 3.0, .5)) - .05*Math.sin(Math.PI*prog(t, 84.8, .5));
+  const appear = E.outBack(prog(t, .25, .6));
+  const w = mix(MK.w, PH.w, grow), h = mix(MK.h, PH.h, grow), r = mix(MK.r, PH.r, grow);
+  const float = 6*Math.sin(2*Math.PI*t/5.5)*grow;
+  const cx = mix(MK.cx, PH.cx, grow), cy = mix(MK.cy, PH.cy, grow) + float;
+  const sc = (grow > 0 ? 1 : appear)*squash;
+  phone.style.width = w + 'px'; phone.style.height = h + 'px'; phone.style.borderRadius = r + 'px';
+  phone.style.transform = `translate(${cx - w/2}px,${cy - h/2}px) scale(${sc})`;
+  const bg = [mix(31, 9, grow), mix(82, 26, grow), mix(69, 22, grow)].map(Math.round);
+  phone.style.background = `rgb(${bg})`;
+  const sw = Math.max(0, w - 2*BEZ), sh = Math.max(0, h - 2*BEZ);
+  screenEl.style.cssText = `left:${BEZ}px;top:${BEZ}px;width:${sw}px;height:${sh}px;border-radius:${Math.max(0, r - BEZ)}px;opacity:${clamp((grow - .35)/.45)}`;
+  iframe.style.transform = `translate(${(sw - SCR_W)/2}px,${(sh - SCR_H)/2}px) scale(${K})`;
+  const markO = 1 - clamp((grow - .05)/.3);
+  mark.style.opacity = markO;
+  mark.style.transform = `scale(${1 + grow*.8})`;
+  const draw = E.out3(prog(t, .5, .9)) * (t < 85 ? 1 : E.out3(prog(t, 86.0, .9)));
+  markArc.style.strokeDashoffset = ARC_LEN*(1 - draw);
+  const dot = t < 85 ? E.outBack(prog(t, 1.35, .35)) : E.outBack(prog(t, 86.7, .35));
+  markDot.setAttribute('r', (3*dot).toFixed(3));
+
+  // Cámara. Si el acercamiento sube el teléfono sobre la franja superior, la franja se retira.
+  const cs = camS(t), cyy = camY(t);
+  cam.style.transform = `translate(${camX(t)}px,${cyy}px) scale(${cs})`;
+  const phoneTop = C.y + cyy + cs*(330 - C.y);
+  const band = clamp((phoneTop - 190)/120);
+  chapsEl.style.opacity = band;
+
+  // Palabra «cuco» bajo el logo: entra letra por letra, se retira antes de la transformación
+  // (para no cruzar el logo) y vuelve en el cierre. Arriba queda una marca pequeña aparte.
+  word.style.transform = `translate(515px,${MK.cy + 250}px) translateY(-50%)`;
+  letters.forEach((l, i) => {
+    const pin = t < 50 ? E.outBack(prog(t, 1.1 + i*.09, .5)) : E.outBack(prog(t, 86.2 + i*.09, .5));
+    const pout = t < 50 ? E.in3(prog(t, 2.95 + i*.05, .3)) : 0;
+    l.style.transform = `translateY(${((1 - pin) + pout)*60}px)`; l.style.opacity = clamp(pin*1.5)*(1 - pout);
+  });
+  wordSub.style.opacity = E.out3(prog(t, 1.75, .45))*(1 - prog(t, 2.9, .3)) + E.out3(prog(t, 86.6, .5));
+  const bp = E.out3(prog(t, 4.2, .5));
+  brand.style.opacity = bp*(1 - prog(t, 84.6, .4))*band;
+  brand.style.transform = `translate(515px,${92 + (1 - bp)*24}px) translateY(-50%)`;
+
+  // Cierre.
+  const tg = E.out3(prog(t, 87.0, .7)), cr = E.out3(prog(t, 87.6, .6));
+  tagline.style.opacity = tg; tagline.style.transform = `translateY(${(1 - tg)*30}px)`;
+  credits.style.opacity = cr; credits.style.transform = `translateY(${(1 - cr)*20}px)`;
+
+  // Títulos de capítulo: palabras que suben desde una máscara; salen hacia arriba.
+  for (const c of chaps) {
+    const on = t >= c.a - .01 && t < c.b + .15;
+    c.el.style.visibility = on ? 'visible' : 'hidden';
+    if (!on) continue;
+    c.ws.forEach((w, i) => {
+      const pin = E.outBack(prog(t, c.a + i*.07, .55)), pout = E.in3(prog(t, c.b - .2, .3));
+      w.style.transform = `translateY(${((1 - pin) - pout)*110}%)`;
+    });
+  }
+  const chapO = clamp(prog(t, 4.4, .4)) * (1 - prog(t, 84.6, .5));
+  progress.style.opacity = chapO*band;
+  chaps.forEach((c, i) => bars[i].style.transform = `scaleX(${prog(t, c.a, c.b - c.a)})`);
+
+  // Subtítulos.
+  for (const s of subs) {
+    const p = Math.min(prog(t, s.a, .2), 1 - prog(t, s.b - .2, .2));
+    s.el.style.opacity = p > 0 ? E.out3(p) : 0;
+    s.el.style.transform = `translateY(${(1 - E.out3(clamp(p)))*14}px)`;
+  }
+
+  // Atmósfera: brillo que deriva y órbita del logo que gira despacio.
+  glow.style.transform = `translate(${515 + 170*Math.sin(2*Math.PI*t/14)}px,${900 + 230*Math.sin(2*Math.PI*t/19 + 1)}px)`;
+  orbit.style.transform = `rotate(${t*3.2}deg) scale(${1 + .04*Math.sin(2*Math.PI*t/9)})`;
+
+  // Dedo: llega en arco, anticipa, presiona (onda) y se retira.
+  let fo = 0, fx = 0, fy = 0, fs = 1, ro = 0, rs = 0;
+  const tap = TAPS.find(k => t >= k.t - .8 && t < k.t + .6);
+  if (tap) {
+    const ir = iframe.getBoundingClientRect(), sr = stage.getBoundingClientRect(), ks = sr.width/1080;
+    const tx = (ir.left - sr.left)/ks + tap.x*ir.width/ks/390, ty = (ir.top - sr.top)/ks + tap.y*ir.height/ks/760;
+    const pa = E.out3(prog(t, tap.t - .8, .66));
+    const arc = Math.sin(Math.PI*pa)*-40;
+    fx = tx + (1 - pa)*90 + arc*.4; fy = ty + (1 - pa)*150 + arc;
+    const leave = E.in3(prog(t, tap.t + .2, .4));
+    fx += leave*40; fy += leave*70;
+    fo = clamp(prog(t, tap.t - .8, .2)) * (1 - leave);
+    fs = 1 + .12*Math.sin(Math.PI*prog(t, tap.t - .22, .16)) - .2*Math.sin(Math.PI*prog(t, tap.t - .06, .2));
+    const rp = prog(t, tap.t, .5);
+    ro = t >= tap.t ? (1 - rp)*.85 : 0; rs = .3 + E.out3(rp)*1.2;
+    ripple.style.transform = `translate(${tx}px,${ty}px) scale(${rs})`;
+  }
+  finger.style.opacity = fo;
+  finger.style.transform = `translate(${fx}px,${fy}px) scale(${fs})`;
+  ripple.style.opacity = ro;
+}
+
+let current = 0;
+function seek(t) {
+  t = clamp(t, 0, DUR);
+  current = t;
+  applySite(t);
+  applyStage(t);
+  return t;
+}
+
+/* ---------- Arranque ---------- */
+function measureTaps() {
+  for (const k of TAPS) {
+    applySite(k.t - .001);
+    const els = D.querySelectorAll(k.sel), el = els[k.idx];
+    const r = el.getBoundingClientRect();
+    k.x = r.left + r.width/2; k.y = r.top + r.height/2;
+    if (r.width === 0) console.warn('toque sin objetivo visible', k);
+  }
+}
+
+function fit() {
+  if (document.body.classList.contains('render')) return;
+  const s = Math.min(innerWidth/1080, (innerHeight - 40)/1920);
+  stage.style.transform = `scale(${s})`;
+}
+
+window.__ready = new Promise(resolve => {
+  const go = () => {
+    setupSite();
+    // 'max' = fondo real de la página con la segunda pregunta abierta.
+    last = {}; applyState(stateAt(81));
+    const max = S.root.scrollHeight - S.root.clientHeight;
+    pageScroll = track(scrollKF.map(k => k[1] === 'max' ? [k[0], max, k[2]] : k));
+    applySite(0);
+    measureTaps();
+    last = {}; seek(0);
+    resolve({ duration: DUR, fps: FPS, frames: DUR*FPS });
+  };
+  if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete' && iframe.contentDocument.querySelector('#mood-feedback')) go();
+  else iframe.addEventListener('load', go, { once: true });
+});
+
+window.__player = { seek, duration: DUR, fps: FPS, taps: TAPS, get time() { return current; } };
+
+if (new URLSearchParams(location.search).has('render')) document.body.classList.add('render');
+addEventListener('resize', fit); fit();
+
+// Vista previa (no participa en el render).
+const play = $('#play'), scrub = $('#scrub'), clock = $('#clock');
+let playing = false, t0 = 0, start = 0;
+function loop(now) {
+  if (!playing) return;
+  const t = start + (now - t0)/1000;
+  if (t >= DUR) { playing = false; play.textContent = '▶︎'; }
+  seek(Math.min(t, DUR)); scrub.value = current; clock.textContent = current.toFixed(2) + ' s';
+  requestAnimationFrame(loop);
+}
+play.onclick = () => { playing = !playing; play.textContent = playing ? '❚❚' : '▶︎'; if (playing) { t0 = performance.now(); start = current >= DUR ? 0 : current; requestAnimationFrame(loop); } };
+scrub.oninput = () => { seek(+scrub.value); clock.textContent = current.toFixed(2) + ' s'; };
+})();
+</script>
+</body>
+</html>

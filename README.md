@@ -37,6 +37,11 @@ Duración provisional de la pieza completa: 131.467 s (3944 fotogramas); se ajus
 - Validación: `@hyperframes/lint` 0 errores (avisos de tamaño/estructura); 35 subtítulos comprobados automáticamente (≤ 2 renglones, dentro de 100–930 px, sin solapes).
 - Para Send to HyperFrames, el `<audio>` necesita una URL pública absoluta del mp3 (la ruta relativa no viaja).
 
+## Otro video: recorrido móvil de CUCO
+
+`cuco-movil/` contiene un video vertical de 90 s que recorre la versión móvil de CUCO · Cuenta Conmigo
+(render en `exportes/cuco-recorrido-movil-90s.mp4`). Detalles, animatic y comprobaciones en `cuco-movil/README.md`.
+
 ## Pendiente
 
 1. Revisión humana de la pieza con audio (sincronía fina, mezcla, lectura en teléfono).
